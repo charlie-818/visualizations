@@ -146,7 +146,9 @@ Vaulto tokenized stocks represent ownership in traditional stocks through blockc
 4. Connect your GitHub repository to Netlify
 5. Deploy!
 
-The application will build and run entirely on Netlify's CDN - no backend servers needed.
+The application uses Netlify Functions to proxy Alpha Vantage API requests (avoids CORS issues). No backend servers needed!
+
+**Note**: For local testing with Netlify Functions, install Netlify CLI and use `netlify dev` instead of `npm run dev`.
 
 ## Development
 
