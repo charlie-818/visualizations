@@ -24,10 +24,8 @@ export const InvestmentInput: React.FC<InvestmentInputProps> = ({
   };
 
   return (
-    <div className="w-full">
-      <label htmlFor="investment-input" className="block text-sm font-medium text-gray-700 mb-2">
-        Investment Amount ($)
-      </label>
+    <span className="inline-flex items-center">
+      <span className="mr-2 text-3xl font-semibold text-blue-600">$</span>
       <input
         id="investment-input"
         type="number"
@@ -36,12 +34,12 @@ export const InvestmentInput: React.FC<InvestmentInputProps> = ({
         value={value === 0 ? '' : value}
         onChange={handleChange}
         disabled={disabled}
-        placeholder="Enter amount"
-        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+        placeholder="0"
+        className="text-2xl font-semibold w-36 px-4 py-2 border-2 border-blue-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
       />
       {value > 0 && value < 1 && (
-        <p className="mt-1 text-sm text-red-600">Minimum investment is $1</p>
+        <span className="ml-3 text-base text-red-600 font-medium">Minimum is $1</span>
       )}
-    </div>
+    </span>
   );
 };

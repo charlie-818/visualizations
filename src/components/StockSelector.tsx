@@ -15,24 +15,19 @@ export const StockSelector: React.FC<StockSelectorProps> = ({
   disabled = false,
 }) => {
   return (
-    <div className="w-full">
-      <label htmlFor="stock-select" className="block text-sm font-medium text-gray-700 mb-2">
-        Select Tokenized Stock
-      </label>
-      <select
-        id="stock-select"
-        value={selectedSymbol}
-        onChange={(e) => onSelect(e.target.value)}
-        disabled={disabled}
-        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-      >
-        <option value="">-- Select a stock --</option>
-        {stocks.map((stock) => (
-          <option key={stock.symbol} value={stock.symbol}>
-            {stock.symbol}
-          </option>
-        ))}
-      </select>
-    </div>
+    <select
+      id="stock-select"
+      value={selectedSymbol}
+      onChange={(e) => onSelect(e.target.value)}
+      disabled={disabled}
+      className="text-2xl font-semibold px-3 py-2 w-[150px] border-2 border-blue-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
+    >
+      <option value="">-- Select a stock --</option>
+      {stocks.map((stock) => (
+        <option key={stock.symbol} value={stock.symbol}>
+          {stock.symbol}
+        </option>
+      ))}
+    </select>
   );
 };
