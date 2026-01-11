@@ -47,7 +47,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   tokenizedSymbol, 
   currentPrice: _currentPrice,
   feesClaimed: _feesClaimed,
-  investmentAmount,
+  investmentAmount: _investmentAmount,
   startPrice: _startPrice,
   poolTVL,
   volumeForPeriod,
