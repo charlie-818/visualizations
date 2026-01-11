@@ -2,7 +2,7 @@ import { TimePeriod, YFinanceResponse, StockPriceData } from '../types/stock.typ
 import { mapTokenizedToTraditional } from '../utils/calculations';
 
 /**
- * Service for fetching stock data directly from Alpha Vantage API (no backend required)
+ * Service for fetching stock data via Netlify Function proxy (avoids CORS issues)
  * 
  * Note: Alpha Vantage free tier limitations:
  * - 5 calls per minute
@@ -10,21 +10,9 @@ import { mapTokenizedToTraditional } from '../utils/calculations';
  * - No intraday data (24h period uses last 2 days of daily data)
  * 
  * Get a free API key at: https://www.alphavantage.co/support/#api-key
- * Set it as VITE_ALPHA_VANTAGE_API_KEY environment variable
+ * Set it as VITE_ALPHA_VANTAGE_API_KEY environment variable in Netlify
  */
 export class YFinanceService {
-  private static readonly BASE_URL = 'https://www.alphavantage.co/query';
-
-  /**
-   * Get API key from environment variable
-   */
-  private static getApiKey(): string {
-    const apiKey = import.meta.env.VITE_ALPHA_VANTAGE_API_KEY;
-    if (!apiKey) {
-      throw new Error('Alpha Vantage API key is required. Please set VITE_ALPHA_VANTAGE_API_KEY environment variable. Get a free key at https://www.alphavantage.co/support/#api-key');
-    }
-    return apiKey;
-  }
 
   /**
    * Get date range for period
@@ -66,33 +54,22 @@ export class YFinanceService {
     period: TimePeriod
   ): Promise<YFinanceResponse> {
     const traditionalSymbol = mapTokenizedToTraditional(symbol);
-    const apiKey = this.getApiKey();
     
     try {
-      // Alpha Vantage free tier doesn't support intraday, so use daily data
-      // For 24h, we'll use the last 2 days of daily data
-      const functionType = 'TIME_SERIES_DAILY';
-      
       // Use 'full' for 30d to get more data, 'compact' for shorter periods
       const outputsize = period === '30d' ? 'full' : 'compact';
       
-      const params = new URLSearchParams({
-        function: functionType,
-        symbol: traditionalSymbol,
-        apikey: apiKey,
-        outputsize: outputsize,
-        datatype: 'json',
-      });
-      
-      const url = `${this.BASE_URL}?${params.toString()}`;
+      // Call Netlify function to proxy Alpha Vantage API (avoids CORS issues)
+      const url = `/api/alpha-vantage?symbol=${encodeURIComponent(traditionalSymbol)}&period=${period}&outputsize=${outputsize}`;
       
       const response = await fetch(url);
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch stock data: ${response.statusText}`);
-      }
-
       const data = await response.json();
+
+      // Check if Netlify function returned an error
+      if (!response.ok || data.error) {
+        throw new Error(data.error || `Failed to fetch stock data: ${response.statusText}`);
+      }
 
       // Check for API errors first
       if ('Error Message' in data) {

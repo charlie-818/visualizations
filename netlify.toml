@@ -3,10 +3,17 @@
   command = "npm run build"
   publish = "dist"
 
-# Frontend-only application - no backend required!
-# All data fetching is done directly from the browser using Alpha Vantage API
+# Frontend application with Netlify Function for Alpha Vantage API proxy
 # Set VITE_ALPHA_VANTAGE_API_KEY environment variable in Netlify (Site settings → Environment variables)
 # Get a free API key at: https://www.alphavantage.co/support/#api-key
+# The Netlify Function proxies API requests to avoid CORS issues
+
+# Proxy API requests to Netlify Function
+[[redirects]]
+  from = "/api/alpha-vantage"
+  to = "/.netlify/functions/alpha-vantage"
+  status = 200
+
 # SPA fallback - redirect all routes to index.html for client-side routing
 [[redirects]]
   from = "/*"
