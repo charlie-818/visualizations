@@ -13,7 +13,7 @@ import { TimePeriod, ComparisonData } from './types/stock.types';
 import { TokenizedStock } from './types/vaulto.types';
 
 function App() {
-  const [selectedSymbol, setSelectedSymbol] = useState<string>('');
+  const [selectedSymbol, setSelectedSymbol] = useState<string>('NVDAon');
   const [investmentAmount, setInvestmentAmount] = useState<number>(1000);
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('30d');
   const [comparisonData, setComparisonData] = useState<ComparisonData | null>(null);
