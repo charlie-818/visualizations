@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { ChartDataPoint } from '../types/stock.types';
-import { formatCurrency, formatDateCompact } from '../utils/formatters';
+import { formatCurrency, formatDateCompact, formatMultiple } from '../utils/formatters';
 import { mapTokenizedToTraditional } from '../utils/calculations';
 
 interface ComparisonChartProps {
@@ -19,6 +19,9 @@ interface ComparisonChartProps {
   feesClaimed: number;
   investmentAmount: number;
   startPrice: number;
+  poolTVL: number;
+  volumeForPeriod: number;
+  userTVLFraction: number;
 }
 
 const CustomTooltip = ({ active, payload }: any) => {
@@ -45,7 +48,10 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   currentPrice: _currentPrice,
   feesClaimed: _feesClaimed,
   investmentAmount,
-  startPrice: _startPrice
+  startPrice: _startPrice,
+  poolTVL,
+  volumeForPeriod,
+  userTVLFraction
 }) => {
   const traditionalSymbol = mapTokenizedToTraditional(tokenizedSymbol);
   
@@ -54,6 +60,10 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   const lastDataPoint = data && data.length > 0 ? data[data.length - 1] : null;
   const traditionalFinalValue = lastDataPoint?.traditionalValue || investmentAmount;
   const tokenizedFinalValue = lastDataPoint?.tokenizedValue || investmentAmount;
+
+  // Calculate metrics for display
+  const volumeTVLMultiple = poolTVL > 0 ? volumeForPeriod / poolTVL : 0;
+  const tvlFractionPercentage = userTVLFraction * 100;
 
   const formatYAxis = (value: number) => {
     if (value >= 1000) {
@@ -102,11 +112,36 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 relative">
-      <div className="flex gap-2 items-center mb-4">
-        <div className="text-2xl font-bold text-green-600">{tokenizedSymbol}</div>
-        <span className="text-2xl font-bold text-black">Token</span>
-        <div className="text-2xl font-bold text-blue-600">{traditionalSymbol}</div>
-        <span className="text-2xl font-bold text-black">Stock</span>
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex gap-2 items-center">
+          <div className="text-2xl font-bold text-green-600">{tokenizedSymbol}</div>
+          <span className="text-2xl font-bold text-black">Token</span>
+          <div className="text-2xl font-bold text-blue-600">{traditionalSymbol}</div>
+          <span className="text-2xl font-bold text-black">Stock</span>
+        </div>
+        
+        {/* Metrics display to the right of title */}
+        <div className="flex gap-4 text-xs text-gray-600">
+          <div>
+            <span className="text-gray-500">Volume/TVL Multiple</span>
+            <span className="ml-1 font-semibold text-gray-800">{formatMultiple(volumeTVLMultiple)}</span>
+          </div>
+          <div>
+            <span className="text-gray-500">Total TVL</span>
+            <span className="ml-1 font-semibold text-gray-800">
+              {new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              }).format(poolTVL)}
+            </span>
+          </div>
+          <div>
+            <span className="text-gray-500">Fraction of TVL</span>
+            <span className="ml-1 font-semibold text-gray-800">{tvlFractionPercentage.toFixed(2)}%</span>
+          </div>
+        </div>
       </div>
       
       {/* Final value display in top right */}

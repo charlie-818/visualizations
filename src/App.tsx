@@ -190,12 +190,13 @@ function App() {
               feesClaimed={comparisonData.calculationResult.feesClaimed}
               investmentAmount={comparisonData.investmentAmount}
               startPrice={comparisonData.startPrice}
+              poolTVL={comparisonData.poolTVL}
+              volumeForPeriod={comparisonData.volumeForPeriod}
+              userTVLFraction={comparisonData.calculationResult.userTVLFraction}
             />
             <div className="grid grid-cols-1 gap-6">
               <MetricsSummary
                 result={comparisonData.calculationResult}
-                poolTVL={comparisonData.poolTVL}
-                volumeForPeriod={comparisonData.volumeForPeriod}
               />
             </div>
           </div>
