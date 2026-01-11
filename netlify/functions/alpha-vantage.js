@@ -29,7 +29,8 @@ exports.handler = async (event, context) => {
   try {
     // Build Alpha Vantage API URL
     const functionType = 'TIME_SERIES_DAILY';
-    const outputSize = outputsize || (period === '30d' ? 'full' : 'compact');
+    // Use 'compact' (100 data points) - 'full' is a premium feature
+    const outputSize = outputsize || 'compact';
     
     const url = new URL('https://www.alphavantage.co/query');
     url.searchParams.set('function', functionType);

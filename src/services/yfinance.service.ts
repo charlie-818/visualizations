@@ -56,8 +56,8 @@ export class YFinanceService {
     const traditionalSymbol = mapTokenizedToTraditional(symbol);
     
     try {
-      // Use 'full' for 30d to get more data, 'compact' for shorter periods
-      const outputsize = period === '30d' ? 'full' : 'compact';
+      // Use 'compact' (100 data points) - 'full' is a premium feature
+      const outputsize = 'compact';
       
       // Call Netlify function to proxy Alpha Vantage API (avoids CORS issues)
       const url = `/api/alpha-vantage?symbol=${encodeURIComponent(traditionalSymbol)}&period=${period}&outputsize=${outputsize}`;
