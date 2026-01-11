@@ -54,12 +54,6 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   userTVLFraction
 }) => {
   const traditionalSymbol = mapTokenizedToTraditional(tokenizedSymbol);
-  
-  // Get final values from the last data point (end of period)
-  // These represent the total value of the investment at the end
-  const lastDataPoint = data && data.length > 0 ? data[data.length - 1] : null;
-  const traditionalFinalValue = lastDataPoint?.traditionalValue || investmentAmount;
-  const tokenizedFinalValue = lastDataPoint?.tokenizedValue || investmentAmount;
 
   // Calculate metrics for display
   const volumeTVLMultiple = poolTVL > 0 ? volumeForPeriod / poolTVL : 0;
@@ -140,20 +134,6 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
           <div>
             <span className="text-gray-500">Fraction of TVL</span>
             <span className="ml-1 font-semibold text-gray-800">{tvlFractionPercentage.toFixed(2)}%</span>
-          </div>
-        </div>
-      </div>
-      
-      {/* Final value display in top right */}
-      <div className="absolute top-6 right-6 bg-white border border-gray-200 rounded-lg px-4 py-2 shadow-sm z-10">
-        <div className="flex flex-col gap-1 text-sm">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-green-600">{tokenizedSymbol}</span>
-            <span className="text-gray-700">{formatCurrency(tokenizedFinalValue)}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-blue-600">{traditionalSymbol}</span>
-            <span className="text-gray-700">{formatCurrency(traditionalFinalValue)}</span>
           </div>
         </div>
       </div>
