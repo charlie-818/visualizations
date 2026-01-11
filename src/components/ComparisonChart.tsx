@@ -42,10 +42,10 @@ const CustomTooltip = ({ active, payload }: any) => {
 export const ComparisonChart: React.FC<ComparisonChartProps> = ({ 
   data, 
   tokenizedSymbol, 
-  currentPrice,
-  feesClaimed,
+  currentPrice: _currentPrice,
+  feesClaimed: _feesClaimed,
   investmentAmount,
-  startPrice
+  startPrice: _startPrice
 }) => {
   const traditionalSymbol = mapTokenizedToTraditional(tokenizedSymbol);
   
@@ -63,7 +63,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   };
 
   // Calculate min and max values from data with padding
-  const calculateYAxisDomain = () => {
+  const calculateYAxisDomain = (): [number, number] => {
     if (!data || data.length === 0) return [0, 1000];
 
     const allValues = data.flatMap(point => [

@@ -1,0 +1,16 @@
+# Netlify configuration for Stock vs Tokenized Stock Comparison Visualizer
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA fallback - redirect all routes to index.html for client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Note: The backend Flask API (in /backend) needs to be deployed separately
+# as Netlify doesn't support long-running Python servers. Options:
+# - Deploy backend to Railway, Render, Heroku, or similar service
+# - Update API_BASE_URL in src/services/*.service.ts to point to deployed backend
+# - Or use Netlify Functions/Edge Functions (requires backend rewrite)

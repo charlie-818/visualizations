@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { StockSelector } from './components/StockSelector';
 import { InvestmentInput } from './components/InvestmentInput';
 import { TimePeriodSelector } from './components/TimePeriodSelector';
