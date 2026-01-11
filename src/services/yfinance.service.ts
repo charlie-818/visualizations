@@ -94,12 +94,22 @@ export class YFinanceService {
 
       const data = await response.json();
 
-      // Check for API errors
+      // Check for API errors first
       if ('Error Message' in data) {
         throw new Error(data['Error Message']);
       }
       if ('Note' in data) {
         throw new Error('API rate limit exceeded. Please try again later. (Alpha Vantage free tier: 5 calls/min, 500/day)');
+      }
+      
+      // Check if response only has Information (rate limit or other info messages)
+      const keys = Object.keys(data);
+      if (keys.length === 1 && keys[0] === 'Information') {
+        const infoMessage = data['Information'] as string;
+        if (infoMessage.includes('API call frequency') || infoMessage.includes('rate')) {
+          throw new Error('API rate limit exceeded. Please try again later. (Alpha Vantage free tier: 5 calls/min, 500/day)');
+        }
+        throw new Error(infoMessage || 'Alpha Vantage API returned an informational message. This may indicate rate limiting or API issues.');
       }
 
       // Parse response - find the Time Series key
@@ -115,12 +125,18 @@ export class YFinanceService {
         // Log the actual response keys for debugging
         const keys = Object.keys(data);
         console.error('Alpha Vantage API response keys:', keys);
+        
+        // Check for specific error fields
         if ('Error Message' in data) {
           throw new Error(data['Error Message']);
         }
         if ('Note' in data) {
           throw new Error('API rate limit exceeded. Please try again later. (Alpha Vantage free tier: 5 calls/min, 500/day)');
         }
+        if ('Information' in data) {
+          throw new Error(data['Information']);
+        }
+        
         throw new Error(`Invalid response structure from Alpha Vantage API. Response keys: ${keys.join(', ')}`);
       }
 
