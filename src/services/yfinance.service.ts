@@ -1,38 +1,166 @@
-import { TimePeriod, YFinanceResponse } from '../types/stock.types';
+import { TimePeriod, YFinanceResponse, StockPriceData } from '../types/stock.types';
 import { mapTokenizedToTraditional } from '../utils/calculations';
 
-const API_BASE_URL = '/api';
-
 /**
- * Service for fetching stock data from yfinance API
+ * Service for fetching stock data directly from Alpha Vantage API (no backend required)
+ * 
+ * Note: Alpha Vantage free tier limitations:
+ * - 5 calls per minute
+ * - 500 calls per day
+ * - No intraday data (24h period uses last 2 days of daily data)
+ * 
+ * Get a free API key at: https://www.alphavantage.co/support/#api-key
+ * Set it as VITE_ALPHA_VANTAGE_API_KEY environment variable
  */
 export class YFinanceService {
+  private static readonly BASE_URL = 'https://www.alphavantage.co/query';
+
   /**
-   * Fetch historical stock price data
+   * Get API key from environment variable
+   */
+  private static getApiKey(): string {
+    const apiKey = import.meta.env.VITE_ALPHA_VANTAGE_API_KEY;
+    if (!apiKey) {
+      throw new Error('Alpha Vantage API key is required. Please set VITE_ALPHA_VANTAGE_API_KEY environment variable. Get a free key at https://www.alphavantage.co/support/#api-key');
+    }
+    return apiKey;
+  }
+
+  /**
+   * Get date range for period
+   */
+  private static getDateRangeForPeriod(period: TimePeriod): { startDate: Date; endDate: Date } {
+    const endDate = new Date();
+    endDate.setHours(0, 0, 0, 0); // Normalize to midnight
+    
+    const periodMap: Record<TimePeriod, number> = {
+      '24h': 2, // Use 2 days since Alpha Vantage free tier doesn't support intraday
+      '7d': 7,
+      '30d': 30,
+    };
+    
+    const days = periodMap[period] || 30;
+    const startDate = new Date(endDate);
+    startDate.setDate(startDate.getDate() - days);
+    
+    return { startDate, endDate };
+  }
+
+  /**
+   * Filter prices by period
+   */
+  private static filterPricesByPeriod(prices: StockPriceData[], period: TimePeriod): StockPriceData[] {
+    const { startDate } = this.getDateRangeForPeriod(period);
+    
+    return prices.filter(price => {
+      const priceDate = new Date(price.date);
+      return priceDate >= startDate;
+    });
+  }
+
+  /**
+   * Fetch historical stock price data directly from Alpha Vantage API
    */
   static async fetchStockData(
     symbol: string,
     period: TimePeriod
   ): Promise<YFinanceResponse> {
     const traditionalSymbol = mapTokenizedToTraditional(symbol);
+    const apiKey = this.getApiKey();
     
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/stock-data?symbol=${encodeURIComponent(traditionalSymbol)}&period=${period}`
-      );
+      // Alpha Vantage free tier doesn't support intraday, so use daily data
+      // For 24h, we'll use the last 2 days of daily data
+      const functionType = 'TIME_SERIES_DAILY';
+      
+      // Use 'full' for 30d to get more data, 'compact' for shorter periods
+      const outputsize = period === '30d' ? 'full' : 'compact';
+      
+      const params = new URLSearchParams({
+        function: functionType,
+        symbol: traditionalSymbol,
+        apikey: apiKey,
+        outputsize: outputsize,
+        datatype: 'json',
+      });
+      
+      const url = `${this.BASE_URL}?${params.toString()}`;
+      
+      const response = await fetch(url);
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        throw new Error(errorData.error || `Failed to fetch stock data: ${response.statusText}`);
+        throw new Error(`Failed to fetch stock data: ${response.statusText}`);
       }
 
-      const data: YFinanceResponse = await response.json();
-      return data;
+      const data = await response.json();
+
+      // Check for API errors
+      if ('Error Message' in data) {
+        throw new Error(data['Error Message']);
+      }
+      if ('Note' in data) {
+        throw new Error('API rate limit exceeded. Please try again later. (Alpha Vantage free tier: 5 calls/min, 500/day)');
+      }
+
+      // Parse response - find the Time Series key
+      let timeSeriesKey: string | null = null;
+      for (const key in data) {
+        if (key.includes('Time Series')) {
+          timeSeriesKey = key;
+          break;
+        }
+      }
+
+      if (!timeSeriesKey || !data[timeSeriesKey]) {
+        throw new Error('Invalid response structure from Alpha Vantage API');
+      }
+
+      const timeSeries = data[timeSeriesKey];
+
+      // Convert to our format
+      const prices: StockPriceData[] = [];
+      for (const dateStr in timeSeries) {
+        const values = timeSeries[dateStr];
+        if (values && values['4. close']) {
+          const price = parseFloat(values['4. close']);
+          if (!isNaN(price)) {
+            // Convert date string to ISO format
+            const date = new Date(dateStr + 'T00:00:00Z');
+            prices.push({
+              date: date.toISOString(),
+              price: price,
+            });
+          }
+        }
+      }
+
+      if (prices.length === 0) {
+        throw new Error(`No data found for symbol ${traditionalSymbol}`);
+      }
+
+      // Sort by date (oldest first)
+      prices.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+      // Filter by period
+      const filteredPrices = this.filterPricesByPeriod(prices, period);
+
+      if (filteredPrices.length === 0) {
+        throw new Error(`No data available for ${traditionalSymbol} in the specified period ${period}`);
+      }
+
+      // Get current price (last close price)
+      const currentPrice = filteredPrices[filteredPrices.length - 1].price;
+
+      return {
+        symbol: traditionalSymbol,
+        prices: filteredPrices,
+        currentPrice,
+      };
     } catch (error) {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error('Failed to fetch stock data');
+      throw new Error(`Failed to fetch stock data for ${traditionalSymbol}`);
     }
   }
 }

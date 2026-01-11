@@ -1,13 +1,13 @@
 # Stock vs Tokenized Stock Comparison Visualizer
 
-A web application that visualizes the performance comparison between traditional stocks (via yfinance data) and tokenized stocks from Vaulto, including fee distributions.
+A web application that visualizes the performance comparison between traditional stocks (via Alpha Vantage API) and tokenized stocks from Vaulto, including fee distributions. Fully frontend-only - no backend required!
 
 ## Features
 
 - **Interactive Comparison**: Compare traditional stock performance with tokenized stocks side-by-side
 - **Fee Distribution**: Visualize how fees from liquidity pools enhance tokenized stock returns
 - **Multiple Time Periods**: Analyze performance over 24 hours, 7 days, 30 days, or 1 year
-- **Real-time Data**: Fetches live stock data using yfinance API
+- **Real-time Data**: Fetches live stock data directly from Alpha Vantage API (frontend-only)
 - **Chart Export**: Export comparison charts as PNG images for sharing
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
 
@@ -19,11 +19,10 @@ A web application that visualizes the performance comparison between traditional
   - Recharts for data visualization
   - Vite for build tooling
 
-- **Backend**:
-  - Python Flask
-  - Direct Yahoo Finance API (free, no API key required)
-  - Optional: Alpha Vantage API (free tier available)
-  - Flask-CORS for cross-origin requests
+- **API**: 
+  - Alpha Vantage API (free tier: 5 calls/min, 500/day)
+  - Fetches stock data directly from the browser (no backend required)
+  - Get a free API key at: https://www.alphavantage.co/support/#api-key
 
 ## Project Structure
 
@@ -51,7 +50,7 @@ visualizations/
 │   ├── main.tsx                     # Application entry point
 │   └── index.css                    # Global styles
 ├── backend/
-│   └── app.py                       # Flask API server
+│   └── (legacy - not used)          # Backend is no longer needed
 ├── package.json
 ├── tsconfig.json
 ├── requirements.txt
@@ -63,50 +62,33 @@ visualizations/
 ### Prerequisites
 
 - Node.js 18+ and npm
-- Python 3.8+
-- pip (Python package manager)
+- Alpha Vantage API key (free) - Get one at: https://www.alphavantage.co/support/#api-key
 
-### Frontend Setup
+### Setup
 
 1. Install dependencies:
 ```bash
 npm install
 ```
 
-2. Start the development server:
+2. Set up Alpha Vantage API key:
+   - Get a free API key at: https://www.alphavantage.co/support/#api-key
+   - Create a `.env` file in the project root:
+   ```bash
+   VITE_ALPHA_VANTAGE_API_KEY=your_api_key_here
+   ```
+
+3. Start the development server:
 ```bash
 npm run dev
 ```
 
-The frontend will be available at `http://localhost:3000`
+The application will be available at `http://localhost:3000`
 
-### Backend Setup
-
-1. Create a virtual environment (recommended):
-```bash
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-2. Install Python dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-3. (Optional) Configure stock data provider:
-   - **Default**: Uses direct Yahoo Finance API (free, no setup required, but may have rate limits)
-   - **Alternative**: Use Alpha Vantage API (free tier: 5 calls/min, 500/day)
-     - Get a free API key at: https://www.alphavantage.co/support/#api-key
-     - Set environment variable: `export ALPHA_VANTAGE_API_KEY=your_key_here`
-     - Or create a `.env` file with: `ALPHA_VANTAGE_API_KEY=your_key_here`
-
-4. Start the Flask server:
-```bash
-cd backend
-python app.py
-```
-
-The backend API will be available at `http://localhost:5001` (port 5001 to avoid conflicts with macOS AirPlay)
+**Note**: Alpha Vantage free tier limitations:
+- 5 calls per minute
+- 500 calls per day
+- No intraday data (24h period uses last 2 days of daily data)
 
 ### Building for Production
 
@@ -119,7 +101,7 @@ npm run build
 
 ## Usage
 
-1. Start both the frontend and backend servers
+1. Start the development server: `npm run dev`
 2. Open your browser to `http://localhost:3000`
 3. Select a tokenized stock from the dropdown (e.g., NVDAon, TSLAon)
 4. Enter an investment amount (minimum $1)
@@ -156,31 +138,15 @@ The chart shows:
 
 Vaulto tokenized stocks represent ownership in traditional stocks through blockchain tokens. In addition to tracking the underlying stock price, tokenized stocks earn fees from trading activity in liquidity pools. This means investors can earn additional returns through fees while still benefiting from stock price appreciation.
 
-## API Endpoints
+## Netlify Deployment
 
-### GET `/api/stock-data`
-Fetches historical stock price data.
+1. Get an Alpha Vantage API key: https://www.alphavantage.co/support/#api-key
+2. In Netlify, go to Site settings → Environment variables
+3. Add: `VITE_ALPHA_VANTAGE_API_KEY` = `your_api_key_here`
+4. Connect your GitHub repository to Netlify
+5. Deploy!
 
-**Query Parameters:**
-- `symbol` (required): Stock ticker symbol (e.g., 'NVDA', 'AAPL')
-- `period` (required): Time period ('24h', '7d', '30d')
-
-**Response:**
-```json
-{
-  "symbol": "NVDA",
-  "prices": [
-    {
-      "date": "2024-01-01T00:00:00",
-      "price": 150.25
-    }
-  ],
-  "currentPrice": 155.30
-}
-```
-
-### GET `/api/health`
-Health check endpoint.
+The application will build and run entirely on Netlify's CDN - no backend servers needed.
 
 ## Development
 

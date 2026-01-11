@@ -1,47 +1,27 @@
 import { TokenizedStock, vaultoData } from '../types/vaulto.types';
 
-const API_BASE_URL = '/api';
-
 /**
  * Service for Vaulto tokenized stock data
+ * Uses static data (no backend required)
  */
 export class VaultoService {
   private static stocks: TokenizedStock[] = vaultoData;
 
   /**
-   * Initialize with default data (fallback to static data)
+   * Initialize with default static data
    */
   static initialize(): void {
-    // Service starts with static data as fallback
     VaultoService.stocks = [...vaultoData];
   }
 
   /**
-   * Fetch fresh data from the API
+   * Fetch fresh data - returns static data (no API call needed)
+   * This method exists for compatibility but just returns the static data
    */
   static async fetchFreshData(): Promise<TokenizedStock[]> {
-    try {
-      const response = await fetch(`${API_BASE_URL}/vaulto-data`);
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        throw new Error(errorData.error || `Failed to fetch Vaulto data: ${response.statusText}`);
-      }
-
-      const data: { stocks: TokenizedStock[]; count?: number } = await response.json();
-      
-      if (data.stocks && data.stocks.length > 0) {
-        VaultoService.stocks = data.stocks;
-        return data.stocks;
-      } else {
-        throw new Error('No data received from API');
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new Error('Failed to fetch Vaulto data');
-    }
+    // Just return the static data (no backend needed)
+    // In the future, if Vaulto exposes a public API, this can be updated
+    return [...vaultoData];
   }
 
   /**
