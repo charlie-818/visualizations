@@ -112,7 +112,16 @@ export class YFinanceService {
       }
 
       if (!timeSeriesKey || !data[timeSeriesKey]) {
-        throw new Error('Invalid response structure from Alpha Vantage API');
+        // Log the actual response keys for debugging
+        const keys = Object.keys(data);
+        console.error('Alpha Vantage API response keys:', keys);
+        if ('Error Message' in data) {
+          throw new Error(data['Error Message']);
+        }
+        if ('Note' in data) {
+          throw new Error('API rate limit exceeded. Please try again later. (Alpha Vantage free tier: 5 calls/min, 500/day)');
+        }
+        throw new Error(`Invalid response structure from Alpha Vantage API. Response keys: ${keys.join(', ')}`);
       }
 
       const timeSeries = data[timeSeriesKey];
