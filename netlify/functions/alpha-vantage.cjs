@@ -18,11 +18,13 @@ exports.handler = async (event, context) => {
   }
 
   // Get API key from environment variable
-  const apiKey = process.env.VITE_ALPHA_VANTAGE_API_KEY;
+  // Note: VITE_ prefix is only available during frontend build, not in serverless functions
+  // Check both ALPHA_VANTAGE_API_KEY (preferred) and VITE_ALPHA_VANTAGE_API_KEY (for compatibility)
+  const apiKey = process.env.ALPHA_VANTAGE_API_KEY || process.env.VITE_ALPHA_VANTAGE_API_KEY;
   if (!apiKey) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'API key not configured' }),
+      body: JSON.stringify({ error: 'API key not configured. Set ALPHA_VANTAGE_API_KEY environment variable' }),
     };
   }
 

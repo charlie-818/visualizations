@@ -5,12 +5,15 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 3000,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:5001',
-        changeOrigin: true,
-      },
-    },
+    port: 5173,
+    // Note: When using 'netlify dev', Netlify Dev handles /api requests automatically
+    // Proxy is disabled to let Netlify Dev handle API routing
+    // For standalone development with Flask, uncomment the proxy below:
+    // proxy: {
+    //   '/api': {
+    //     target: 'http://localhost:5001',
+    //     changeOrigin: true,
+    //   },
+    // },
   },
 })

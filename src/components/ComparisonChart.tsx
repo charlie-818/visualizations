@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   LineChart,
   Line,
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   ResponsiveContainer,
 } from 'recharts';
 import { ChartDataPoint } from '../types/stock.types';
@@ -24,24 +23,6 @@ interface ComparisonChartProps {
   userTVLFraction: number;
 }
 
-const CustomTooltip = ({ active, payload }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-white p-3 border border-gray-300 rounded-lg shadow-lg">
-        <p className="text-sm text-gray-600 mb-2">
-          {payload[0]?.payload?.date ? formatDateCompact(payload[0].payload.date) : ''}
-        </p>
-        {payload.map((entry: any, index: number) => (
-          <p key={index} style={{ color: entry.color }} className="text-sm font-medium">
-            {`${entry.name}: ${formatCurrency(entry.value)}`}
-          </p>
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
-
 export const ComparisonChart: React.FC<ComparisonChartProps> = ({ 
   data, 
   tokenizedSymbol, 
@@ -55,9 +36,115 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
 }) => {
   const traditionalSymbol = mapTokenizedToTraditional(tokenizedSymbol);
 
+  // Get default values (last data point)
+  const lastDataPoint = data && data.length > 0 ? data[data.length - 1] : null;
+  const defaultTraditionalValue = lastDataPoint?.traditionalValue ?? 0;
+  const defaultTokenizedValue = lastDataPoint?.tokenizedValue ?? 0;
+
+  // State for hovered values
+  const [hoveredTraditionalValue, setHoveredTraditionalValue] = useState<number | null>(null);
+  const [hoveredTokenizedValue, setHoveredTokenizedValue] = useState<number | null>(null);
+
+  // State for animated display values (for smooth transitions)
+  const [animatedTraditionalValue, setAnimatedTraditionalValue] = useState(defaultTraditionalValue);
+  const [animatedTokenizedValue, setAnimatedTokenizedValue] = useState(defaultTokenizedValue);
+
+  // Refs for animation frames and current values
+  const traditionalAnimationRef = useRef<number | null>(null);
+  const tokenizedAnimationRef = useRef<number | null>(null);
+  const currentTraditionalRef = useRef(defaultTraditionalValue);
+  const currentTokenizedRef = useRef(defaultTokenizedValue);
+
+  // Update refs when animated values change
+  useEffect(() => {
+    currentTraditionalRef.current = animatedTraditionalValue;
+  }, [animatedTraditionalValue]);
+
+  useEffect(() => {
+    currentTokenizedRef.current = animatedTokenizedValue;
+  }, [animatedTokenizedValue]);
+
   // Calculate metrics for display
   const volumeTVLMultiple = poolTVL > 0 ? volumeForPeriod / poolTVL : 0;
   const tvlFractionPercentage = userTVLFraction * 100;
+
+  // Determine target values (hovered or default)
+  const targetTraditionalValue = hoveredTraditionalValue ?? defaultTraditionalValue;
+  const targetTokenizedValue = hoveredTokenizedValue ?? defaultTokenizedValue;
+
+  // Smooth animation effect for traditional value
+  useEffect(() => {
+    if (traditionalAnimationRef.current) {
+      cancelAnimationFrame(traditionalAnimationRef.current);
+    }
+
+    const startValue = currentTraditionalRef.current;
+    const endValue = targetTraditionalValue;
+    const duration = 300; // 300ms animation
+    const startTime = performance.now();
+
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Ease-out easing function
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      const currentValue = startValue + (endValue - startValue) * easeOut;
+      
+      setAnimatedTraditionalValue(currentValue);
+
+      if (progress < 1) {
+        traditionalAnimationRef.current = requestAnimationFrame(animate);
+      } else {
+        setAnimatedTraditionalValue(endValue);
+      }
+    };
+
+    traditionalAnimationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (traditionalAnimationRef.current) {
+        cancelAnimationFrame(traditionalAnimationRef.current);
+      }
+    };
+  }, [targetTraditionalValue]);
+
+  // Smooth animation effect for tokenized value
+  useEffect(() => {
+    if (tokenizedAnimationRef.current) {
+      cancelAnimationFrame(tokenizedAnimationRef.current);
+    }
+
+    const startValue = currentTokenizedRef.current;
+    const endValue = targetTokenizedValue;
+    const duration = 300; // 300ms animation
+    const startTime = performance.now();
+
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Ease-out easing function
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      const currentValue = startValue + (endValue - startValue) * easeOut;
+      
+      setAnimatedTokenizedValue(currentValue);
+
+      if (progress < 1) {
+        tokenizedAnimationRef.current = requestAnimationFrame(animate);
+      } else {
+        setAnimatedTokenizedValue(endValue);
+      }
+    };
+
+    tokenizedAnimationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (tokenizedAnimationRef.current) {
+        cancelAnimationFrame(tokenizedAnimationRef.current);
+      }
+    };
+  }, [targetTokenizedValue]);
 
   const formatYAxis = (value: number) => {
     if (value >= 1000) {
@@ -104,13 +191,34 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   const yAxisDomain = calculateYAxisDomain();
   const yAxisTicks = calculateEvenTicks(yAxisDomain, 8).slice(1); // Remove first tick (bottom value)
 
+  // Handle mouse move event
+  const handleMouseMove = (data: any) => {
+    if (data && data.activePayload && data.activePayload.length > 0) {
+      const payload = data.activePayload[0].payload as ChartDataPoint;
+      setHoveredTraditionalValue(payload.traditionalValue);
+      setHoveredTokenizedValue(payload.tokenizedValue);
+    }
+  };
+
+  // Handle mouse leave event - reset to default values
+  const handleMouseLeave = () => {
+    setHoveredTraditionalValue(null);
+    setHoveredTokenizedValue(null);
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6 relative">
       <div className="flex justify-between items-center mb-4">
         <div className="flex gap-2 items-center">
           <div className="text-2xl font-bold text-green-600">{tokenizedSymbol}</div>
+          <span className="text-2xl font-bold text-gray-600">
+            {formatCurrency(animatedTokenizedValue)}
+          </span>
           <span className="text-2xl font-bold text-black">Token</span>
           <div className="text-2xl font-bold text-blue-600">{traditionalSymbol}</div>
+          <span className="text-2xl font-bold text-gray-600">
+            {formatCurrency(animatedTraditionalValue)}
+          </span>
           <span className="text-2xl font-bold text-black">Stock</span>
         </div>
         
@@ -140,7 +248,12 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
       
       <div>
         <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <LineChart 
+            data={data} 
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+          >
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis
               dataKey="date"
@@ -156,7 +269,6 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
               style={{ fontSize: '12px' }}
               allowDataOverflow={false}
             />
-            <Tooltip content={<CustomTooltip />} />
             <Line
               type="monotone"
               dataKey="traditionalValue"

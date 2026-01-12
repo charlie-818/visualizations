@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any, Tuple
 import traceback
 import os
+import requests
 from dotenv import load_dotenv
 from stock_data_provider import StockDataProvider, YahooFinanceDirectProvider
 from vaulto_scraper import scrape_vaulto_data
@@ -140,6 +141,81 @@ def get_vaulto_data() -> Dict[str, Any]:
         return jsonify({
             'error': f'Failed to fetch data from stake.vaulto.ai: {error_msg}',
             'stocks': []
+        }), 500
+
+@app.route('/api/alpha-vantage', methods=['GET'])
+def get_alpha_vantage_data() -> Dict[str, Any]:
+    """
+    Proxy endpoint for Alpha Vantage API (matches Netlify function behavior)
+    This endpoint is used when running locally without Netlify Dev.
+    
+    Query Parameters:
+        symbol: Stock ticker symbol (e.g., 'NVDA', 'AAPL')
+        period: Time period ('24h', '7d', '30d') - not used by Alpha Vantage directly
+        outputsize: 'compact' (100 data points) or 'full' (default: 'compact')
+    
+    Returns:
+        JSON response matching Alpha Vantage API format
+    """
+    try:
+        symbol = request.args.get('symbol', '').upper()
+        outputsize = request.args.get('outputsize', 'compact')
+        
+        if not symbol:
+            return jsonify({'error': 'Symbol parameter is required'}), 400
+        
+        # Get API key from environment variable
+        # Try both VITE_ALPHA_VANTAGE_API_KEY (for Netlify compatibility) and ALPHA_VANTAGE_API_KEY
+        api_key = os.getenv('VITE_ALPHA_VANTAGE_API_KEY') or os.getenv('ALPHA_VANTAGE_API_KEY')
+        
+        if not api_key:
+            return jsonify({'error': 'API key not configured. Set VITE_ALPHA_VANTAGE_API_KEY or ALPHA_VANTAGE_API_KEY environment variable'}), 500
+        
+        # Build Alpha Vantage API URL
+        function_type = 'TIME_SERIES_DAILY'
+        url = 'https://www.alphavantage.co/query'
+        params = {
+            'function': function_type,
+            'symbol': symbol,
+            'apikey': api_key,
+            'outputsize': outputsize,
+            'datatype': 'json'
+        }
+        
+        # Fetch from Alpha Vantage API
+        response = requests.get(url, params=params, timeout=30)
+        
+        if not response.ok:
+            return jsonify({
+                'error': f'Alpha Vantage API error: {response.status_text}'
+            }), response.status_code
+        
+        data = response.json()
+        
+        # Check for API errors
+        if 'Error Message' in data:
+            return jsonify({
+                'error': data['Error Message']
+            }), 400
+        
+        if 'Note' in data:
+            return jsonify({
+                'error': 'API rate limit exceeded. Please try again later. (Alpha Vantage free tier: 5 calls/min, 500/day)'
+            }), 429
+        
+        # Return the data with CORS headers (handled by CORS middleware)
+        return jsonify(data), 200
+    
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            'error': f'Failed to fetch data from Alpha Vantage API: {str(e)}'
+        }), 500
+    except Exception as e:
+        error_msg = str(e)
+        print(f"Error in /api/alpha-vantage: {error_msg}")
+        print(traceback.format_exc())
+        return jsonify({
+            'error': error_msg or 'Internal server error'
         }), 500
 
 @app.route('/api/health', methods=['GET'])

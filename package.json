@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:flask": "echo 'Starting Flask backend...' && cd backend && python app.py & sleep 2 && cd .. && vite",
     "build": "tsc && vite build",
     "start": "vite preview",
     "preview": "vite preview",

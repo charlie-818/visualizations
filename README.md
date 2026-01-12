@@ -63,22 +63,74 @@ visualizations/
 
 - Node.js 18+ and npm
 - Alpha Vantage API key (free) - Get one at: https://www.alphavantage.co/support/#api-key
+- Python 3.8+ and pip (for Flask backend option)
+- (Optional) Netlify CLI (for Netlify Dev option) - Install with: `npm install -g netlify-cli`
 
-### Setup
+### Local Development Setup
+
+You have **two options** for local development:
+
+#### Option 1: Using Netlify Dev (Recommended - matches production)
+
+This uses Netlify Functions locally, exactly like production:
 
 1. Install dependencies:
 ```bash
 npm install
 ```
 
-2. Set up Alpha Vantage API key:
-   - Get a free API key at: https://www.alphavantage.co/support/#api-key
+2. Install Netlify CLI globally (if not already installed):
+```bash
+npm install -g netlify-cli
+```
+
+3. Set up Alpha Vantage API key:
    - Create a `.env` file in the project root:
    ```bash
+   ALPHA_VANTAGE_API_KEY=your_api_key_here
+   # Optional: Also set VITE_ prefix for frontend (if needed)
+   VITE_ALPHA_VANTAGE_API_KEY=your_api_key_here
+   ```
+   **Important**: Netlify Functions cannot access `VITE_` prefixed variables at runtime. The function uses `ALPHA_VANTAGE_API_KEY` (without `VITE_` prefix).
+
+4. Start Netlify Dev:
+```bash
+npm run netlify:dev
+```
+
+The application will be available at `http://localhost:8888` (Netlify Dev's default port)
+
+#### Option 2: Using Flask Backend (Alternative)
+
+This uses a Python Flask backend instead of Netlify Functions:
+
+1. Install Node.js dependencies:
+```bash
+npm install
+```
+
+2. Install Python dependencies:
+```bash
+cd backend
+pip install -r ../requirements.txt
+cd ..
+```
+
+3. Set up Alpha Vantage API key:
+   - Create a `.env` file in the project root:
+   ```bash
+   ALPHA_VANTAGE_API_KEY=your_api_key_here
+   # Or for consistency with Netlify:
    VITE_ALPHA_VANTAGE_API_KEY=your_api_key_here
    ```
 
-3. Start the development server:
+4. Start Flask backend (in one terminal):
+```bash
+cd backend
+python app.py
+```
+
+5. Start Vite dev server (in another terminal):
 ```bash
 npm run dev
 ```
@@ -101,12 +153,22 @@ npm run build
 
 ## Usage
 
-1. Start the development server: `npm run dev`
-2. Open your browser to `http://localhost:3000`
+### Local Development
+
+1. Choose your preferred local development method (see Setup Instructions above):
+   - **Option 1**: Run `npm run netlify:dev` (opens at `http://localhost:8888`)
+   - **Option 2**: Run Flask backend (`python backend/app.py`) and then `npm run dev` (opens at `http://localhost:3000`)
+
+2. Open your browser to the appropriate URL
+
 3. Select a tokenized stock from the dropdown (e.g., NVDAon, TSLAon)
+
 4. Enter an investment amount (minimum $1)
+
 5. Select a time period (24h, 7d, or 30d)
+
 6. Click "Compare Performance" to see the visualization
+
 7. Use the "Export PNG" button to download the chart
 
 ## Available Tokenized Stocks
@@ -142,13 +204,15 @@ Vaulto tokenized stocks represent ownership in traditional stocks through blockc
 
 1. Get an Alpha Vantage API key: https://www.alphavantage.co/support/#api-key
 2. In Netlify, go to Site settings → Environment variables
-3. Add: `VITE_ALPHA_VANTAGE_API_KEY` = `your_api_key_here`
+3. Add: `ALPHA_VANTAGE_API_KEY` = `your_api_key_here` (without `VITE_` prefix)
+   - **Important**: Netlify Functions cannot access `VITE_` prefixed variables at runtime
+   - The function code checks both `ALPHA_VANTAGE_API_KEY` (preferred) and `VITE_ALPHA_VANTAGE_API_KEY` (for compatibility)
 4. Connect your GitHub repository to Netlify
 5. Deploy!
 
 The application uses Netlify Functions to proxy Alpha Vantage API requests (avoids CORS issues). No backend servers needed!
 
-**Note**: For local testing with Netlify Functions, install Netlify CLI and use `netlify dev` instead of `npm run dev`.
+**Note**: For local testing that matches production, use Option 1 in the Setup Instructions (`npm run netlify:dev`). This runs Netlify Functions locally and avoids the "Unexpected token '<'" error you might encounter with other local setups.
 
 ## Development
 

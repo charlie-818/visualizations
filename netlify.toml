@@ -2,19 +2,27 @@
 [build]
   command = "npm run build"
   publish = "dist"
+  functions = "netlify/functions"
+
+[dev]
+  command = "npm run dev"
+  targetPort = 5173
 
 # Frontend application with Netlify Function for Alpha Vantage API proxy
-# Set VITE_ALPHA_VANTAGE_API_KEY environment variable in Netlify (Site settings → Environment variables)
+# Set ALPHA_VANTAGE_API_KEY environment variable in Netlify (Site settings → Environment variables)
+# Note: Functions cannot use VITE_ prefixed variables - use ALPHA_VANTAGE_API_KEY (without VITE_)
 # Get a free API key at: https://www.alphavantage.co/support/#api-key
 # The Netlify Function proxies API requests to avoid CORS issues
 
-# Proxy API requests to Netlify Function
+# Proxy API requests to Netlify Function (must come before SPA fallback)
 [[redirects]]
   from = "/api/alpha-vantage"
   to = "/.netlify/functions/alpha-vantage"
   status = 200
 
 # SPA fallback - redirect all routes to index.html for client-side routing
+# This only applies in production; in dev mode, Vite handles routing
+# Must be last to not catch API routes
 [[redirects]]
   from = "/*"
   to = "/index.html"
