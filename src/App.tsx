@@ -11,6 +11,7 @@ import { YFinanceService } from './services/yfinance.service';
 import { calculateReturns, generateChartData, getFeesForPeriod, getVolumeForPeriod, calculateEffectiveAPR } from './utils/calculations';
 import { TimePeriod, ComparisonData } from './types/stock.types';
 import { TokenizedStock } from './types/vaulto.types';
+import vaultoLogo from '../vaulto.png';
 
 function App() {
   const [selectedSymbol, setSelectedSymbol] = useState<string>('NVDAon');
@@ -147,7 +148,7 @@ function App() {
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <img 
-            src="/vaulto.png" 
+            src={vaultoLogo} 
             alt="Vaulto Logo" 
             className="h-16 w-auto object-contain"
           />
