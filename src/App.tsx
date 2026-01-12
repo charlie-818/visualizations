@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { StockSelector } from './components/StockSelector';
 import { InvestmentInput } from './components/InvestmentInput';
 import { TimePeriodSelector } from './components/TimePeriodSelector';
@@ -22,7 +22,8 @@ function App() {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [stocks, setStocks] = useState<TokenizedStock[]>(VaultoService.getAllStocks());
-
+  const hasInitialCalculation = useRef<boolean>(false);
+  const prevInputsRef = useRef<{ symbol: string; amount: number; period: TimePeriod } | null>(null);
 
   const handleCalculate = useCallback(async () => {
     if (!selectedSymbol || investmentAmount < 1) {
@@ -79,6 +80,7 @@ function App() {
         currentPrice: endPrice,
         startPrice: startPrice,
       });
+      hasInitialCalculation.current = true;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred while fetching data');
       setComparisonData(null);
@@ -87,6 +89,32 @@ function App() {
     }
   }, [selectedSymbol, investmentAmount, timePeriod]);
 
+  // Auto-update graph when inputs change (only if graph is already displayed)
+  useEffect(() => {
+    // Only auto-update if we have comparison data displayed and inputs have changed
+    if (hasInitialCalculation.current) {
+      const currentInputs = { symbol: selectedSymbol, amount: investmentAmount, period: timePeriod };
+      const prevInputs = prevInputsRef.current;
+      
+      // Check if inputs have actually changed
+      if (prevInputs && (
+        prevInputs.symbol !== currentInputs.symbol ||
+        prevInputs.amount !== currentInputs.amount ||
+        prevInputs.period !== currentInputs.period
+      )) {
+        // Only update if comparison data exists (graph is displayed) and inputs are valid
+        if (comparisonData !== null && !loading && selectedSymbol && investmentAmount >= 1) {
+          handleCalculate();
+        }
+      }
+      
+      prevInputsRef.current = currentInputs;
+    } else if (!prevInputsRef.current) {
+      // Initialize the ref on first render
+      prevInputsRef.current = { symbol: selectedSymbol, amount: investmentAmount, period: timePeriod };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSymbol, investmentAmount, timePeriod]);
 
   const handleRetry = useCallback(() => {
     handleCalculate();
