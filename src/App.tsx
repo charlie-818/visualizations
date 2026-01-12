@@ -144,6 +144,15 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="container mx-auto px-4 py-8 max-w-7xl w-full">
+        {/* Logo */}
+        <div className="flex justify-center mb-8">
+          <img 
+            src="/vaulto.png" 
+            alt="Vaulto Logo" 
+            className="h-16 w-auto object-contain"
+          />
+        </div>
+        
         {/* Input Section */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6 relative">
           <div className="flex justify-between items-center mb-4">
@@ -223,7 +232,7 @@ function App() {
 
         {/* Results Section */}
         {!loading && comparisonData && (
-          <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
+          <div className="space-y-6">
             <ComparisonChart
               data={comparisonData.chartData}
               tokenizedSymbol={selectedSymbol}
@@ -235,9 +244,11 @@ function App() {
               volumeForPeriod={comparisonData.volumeForPeriod}
               userTVLFraction={comparisonData.calculationResult.userTVLFraction}
             />
-            <MetricsSummary
-              result={comparisonData.calculationResult}
-            />
+            <div className="grid grid-cols-1 gap-6">
+              <MetricsSummary
+                result={comparisonData.calculationResult}
+              />
+            </div>
           </div>
         )}
       </div>
