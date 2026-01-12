@@ -120,7 +120,7 @@ function App() {
         <div className="bg-white rounded-lg shadow-md p-6 mb-6 relative">
           <div className="flex justify-between items-center mb-4">
             <div className="flex-1">
-              <p className="text-3xl font-semibold text-gray-900 flex flex-wrap items-center gap-3">
+              <p className="text-3xl font-normal text-gray-900 flex flex-wrap items-center gap-3">
                 What if I invested{' '}
                 <InvestmentInput
                   value={investmentAmount}
