@@ -294,7 +294,6 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis
               dataKey="date"
-              domain={['dataMin', 'dataMax']}
               interval={xAxisInterval}
               tickFormatter={formatDateCompact}
               stroke="#6b7280"
