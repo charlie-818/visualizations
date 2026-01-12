@@ -6,6 +6,7 @@ import {
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
+  Tooltip,
 } from 'recharts';
 import { ChartDataPoint } from '../types/stock.types';
 import { formatCurrency, formatDateCompact, formatMultiple } from '../utils/formatters';
@@ -266,6 +267,20 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
               stroke="#6b7280"
               style={{ fontSize: '12px' }}
               allowDataOverflow={false}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                border: '1px solid #e5e7eb',
+                borderRadius: '6px',
+                padding: '8px 12px',
+              }}
+              cursor={{ stroke: '#9ca3af', strokeWidth: 1, strokeDasharray: '3 3' }}
+              formatter={(value: number, name: string) => [
+                formatCurrency(value),
+                name === 'traditionalValue' ? traditionalSymbol : tokenizedSymbol,
+              ]}
+              labelFormatter={(label) => formatDateCompact(label)}
             />
             <Line
               type="monotone"
