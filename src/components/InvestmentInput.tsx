@@ -25,7 +25,7 @@ export const InvestmentInput: React.FC<InvestmentInputProps> = ({
 
   return (
     <span className="inline-flex items-center">
-      <span className="mr-2 text-3xl font-semibold text-blue-600">$</span>
+      <span className="mr-2 text-3xl font-semibold text-green-600">$</span>
       <input
         id="investment-input"
         type="number"
@@ -35,7 +35,7 @@ export const InvestmentInput: React.FC<InvestmentInputProps> = ({
         onChange={handleChange}
         disabled={disabled}
         placeholder="0"
-        className="text-2xl font-semibold w-36 px-4 py-2 border-2 border-blue-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
+        className="text-2xl font-semibold w-36 px-4 py-2 border-2 border-green-300 rounded-xl bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
       />
       {value > 0 && value < 1 && (
         <span className="ml-3 text-base text-red-600 font-medium">Minimum is $1</span>
