@@ -43,10 +43,20 @@ function App() {
       }
 
       // Fetch stock price data
-      // Use StockDataService for periods 3m, 6m, 1y, YFinanceService for others
-      const stockData = timePeriod === '3m' || timePeriod === '6m' || timePeriod === '1y'
-        ? await StockDataService.fetchStockData(selectedSymbol, timePeriod)
-        : await YFinanceService.fetchStockData(selectedSymbol, timePeriod);
+      // Use StockDataService for all periods, with YFinanceService as fallback
+      let stockData;
+      try {
+        stockData = await StockDataService.fetchStockData(selectedSymbol, timePeriod);
+      } catch (stockDataError) {
+        // Fallback to Alpha Vantage if StockData.org fails
+        console.warn('StockData.org failed, falling back to Alpha Vantage:', stockDataError);
+        try {
+          stockData = await YFinanceService.fetchStockData(selectedSymbol, timePeriod);
+        } catch (fallbackError) {
+          // If both fail, throw the original error
+          throw new Error(`Failed to fetch stock data: ${stockDataError instanceof Error ? stockDataError.message : 'Unknown error'}`);
+        }
+      }
 
       if (stockData.prices.length === 0) {
         throw new Error('No price data available for the selected period');

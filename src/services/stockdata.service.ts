@@ -2,9 +2,10 @@ import { TimePeriod, YFinanceResponse, StockPriceData } from '../types/stock.typ
 import { mapTokenizedToTraditional } from '../utils/calculations';
 
 /**
- * Service for fetching stock data via StockData.org API
+ * Primary service for fetching stock data via StockData.org API
  * 
  * Uses the EOD (End-of-Day) endpoint for historical data
+ * Supports all time periods: 24h, 7d, 30d, 3m, 6m, 1y
  * Get an API token at: https://www.stockdata.org/
  * Set it as STOCKDATA_ORG_API_TOKEN environment variable in Netlify
  */

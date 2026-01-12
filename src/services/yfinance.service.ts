@@ -2,7 +2,8 @@ import { TimePeriod, YFinanceResponse, StockPriceData } from '../types/stock.typ
 import { mapTokenizedToTraditional } from '../utils/calculations';
 
 /**
- * Service for fetching stock data via Netlify Function proxy (avoids CORS issues)
+ * Fallback service for fetching stock data via Alpha Vantage API
+ * Used when StockData.org API is unavailable
  * 
  * Note: Alpha Vantage free tier limitations:
  * - 5 calls per minute
@@ -10,7 +11,7 @@ import { mapTokenizedToTraditional } from '../utils/calculations';
  * - No intraday data (24h period uses last 2 days of daily data)
  * 
  * Get a free API key at: https://www.alphavantage.co/support/#api-key
- * Set it as VITE_ALPHA_VANTAGE_API_KEY environment variable in Netlify
+ * Set it as ALPHA_VANTAGE_API_KEY environment variable in Netlify
  */
 export class YFinanceService {
 
