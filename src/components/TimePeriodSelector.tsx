@@ -12,7 +12,6 @@ const periods: { value: TimePeriod; label: string }[] = [
   { value: '30d', label: '30 days' },
   { value: '3m', label: '3 months' },
   { value: '6m', label: '6 months' },
-  { value: '1y', label: '1 year' },
 ];
 
 export const TimePeriodSelector: React.FC<TimePeriodSelectorProps> = ({
