@@ -214,12 +214,10 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
           <span className="text-2xl font-bold text-gray-600">
             {formatCurrency(animatedTokenizedValue)}
           </span>
-          <span className="text-2xl font-bold text-black">Token</span>
           <div className="text-2xl font-bold text-blue-600">{traditionalSymbol}</div>
           <span className="text-2xl font-bold text-gray-600">
             {formatCurrency(animatedTraditionalValue)}
           </span>
-          <span className="text-2xl font-bold text-black">Stock</span>
         </div>
         
         {/* Metrics display to the right of title */}
