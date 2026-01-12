@@ -18,11 +18,20 @@ exports.handler = async (event, context) => {
   }
 
   // Get API token from environment variable
-  const apiToken = process.env.STOCKDATA_ORG_API_TOKEN;
+  // Check both with and without VITE_ prefix (though VITE_ doesn't work in functions)
+  const apiToken = process.env.STOCKDATA_ORG_API_TOKEN || process.env.VITE_STOCKDATA_ORG_API_TOKEN;
   if (!apiToken) {
+    // Debug: log available env vars (without sensitive data)
+    const envKeys = Object.keys(process.env).filter(key => 
+      key.includes('STOCKDATA') || key.includes('API') || key.includes('TOKEN')
+    );
+    console.error('STOCKDATA_ORG_API_TOKEN not found. Available env vars:', envKeys);
+    
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'API token not configured' }),
+      body: JSON.stringify({ 
+        error: 'API token not configured. Please set STOCKDATA_ORG_API_TOKEN in Netlify environment variables (Site settings → Environment variables)' 
+      }),
     };
   }
 
