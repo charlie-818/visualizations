@@ -24,7 +24,7 @@ export const TimePeriodSelector: React.FC<TimePeriodSelectorProps> = ({
       value={value}
       onChange={(e) => onChange(e.target.value as TimePeriod)}
       disabled={disabled}
-      className="text-2xl font-semibold pl-4 pr-2 py-2 border-2 border-blue-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
+      className="text-2xl font-semibold pl-4 pr-5 py-2 border-2 border-blue-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
     >
       {periods.map((period) => (
         <option key={period.value} value={period.value}>
