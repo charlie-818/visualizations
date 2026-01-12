@@ -8,9 +8,9 @@ interface TimePeriodSelectorProps {
 }
 
 const periods: { value: TimePeriod; label: string }[] = [
-  { value: '24h', label: '1 day ago' },
-  { value: '7d', label: '7 days ago' },
-  { value: '30d', label: '30 days ago' },
+  { value: '24h', label: '1 day' },
+  { value: '7d', label: '7 days' },
+  { value: '30d', label: '30 days' },
 ];
 
 export const TimePeriodSelector: React.FC<TimePeriodSelectorProps> = ({

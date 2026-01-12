@@ -208,7 +208,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 relative">
+    <div className="relative">
       <div className="flex justify-between items-center mb-4">
         <div className="flex gap-2 items-center">
           <div className="text-2xl font-bold text-green-600">{tokenizedSymbol}</div>

@@ -8,7 +8,7 @@ interface MetricsSummaryProps {
 
 export const MetricsSummary: React.FC<MetricsSummaryProps> = ({ result }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div>
       {/* First row: Two large numbers with fees in the middle */}
       <div className="grid grid-cols-3 gap-4">
         {/* Tokenized Return */}

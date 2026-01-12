@@ -168,6 +168,7 @@ function App() {
                   onChange={setTimePeriod}
                   disabled={loading}
                 />
+                {' '}ago?
               </p>
             </div>
             <div className="flex gap-3 items-center ml-6">
@@ -222,7 +223,7 @@ function App() {
 
         {/* Results Section */}
         {!loading && comparisonData && (
-          <div className="space-y-6">
+          <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
             <ComparisonChart
               data={comparisonData.chartData}
               tokenizedSymbol={selectedSymbol}
@@ -234,11 +235,9 @@ function App() {
               volumeForPeriod={comparisonData.volumeForPeriod}
               userTVLFraction={comparisonData.calculationResult.userTVLFraction}
             />
-            <div className="grid grid-cols-1 gap-6">
-              <MetricsSummary
-                result={comparisonData.calculationResult}
-              />
-            </div>
+            <MetricsSummary
+              result={comparisonData.calculationResult}
+            />
           </div>
         )}
       </div>
