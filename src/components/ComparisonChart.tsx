@@ -189,9 +189,10 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
     return ticks;
   };
 
-  // Calculate appropriate tick count for X-axis based on time range
-  const calculateXAxisTickCount = (): number => {
-    if (!data || data.length === 0) return 6;
+  // Calculate appropriate interval for X-axis based on data density
+  // Interval controls spacing between ticks: 0 = show all, higher = skip more
+  const calculateXAxisInterval = (): number => {
+    if (!data || data.length === 0) return 0;
 
     const firstDate = new Date(data[0].date).getTime();
     const lastDate = new Date(data[data.length - 1].date).getTime();
@@ -200,25 +201,34 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
     // Convert to days for calculation
     const days = timeRange / (1000 * 60 * 60 * 24);
     
+    // Determine desired tick count based on time range
+    let desiredTickCount: number;
     if (days <= 1) {
-      return 6; // 24h or less
+      desiredTickCount = 6; // 24h or less
     } else if (days <= 7) {
-      return 7; // 7 days
+      desiredTickCount = 7; // 7 days
     } else if (days <= 30) {
-      return 6; // 30 days
+      desiredTickCount = 6; // 30 days
     } else if (days <= 90) {
-      return 6; // 3 months
+      desiredTickCount = 6; // 3 months
     } else if (days <= 180) {
-      return 6; // 6 months
+      desiredTickCount = 6; // 6 months
     } else {
-      return 12; // 1 year - ensure full year is visible
+      desiredTickCount = 12; // 1 year - ensure full year is visible
     }
+    
+    // Calculate interval: skip enough data points to show desired tick count
+    // interval = Math.floor(data.length / desiredTickCount)
+    // Ensure interval is at least 0 (0 = show all ticks)
+    const interval = Math.max(0, Math.floor(data.length / desiredTickCount));
+    
+    return interval;
   };
 
   const yAxisDomain = calculateYAxisDomain();
   const yAxisTicks = calculateEvenTicks(yAxisDomain, 8).slice(1); // Remove first tick (bottom value)
   
-  const xAxisTickCount = calculateXAxisTickCount();
+  const xAxisInterval = calculateXAxisInterval();
 
   // Handle mouse move event
   const handleMouseMove = (data: any) => {
@@ -285,7 +295,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
             <XAxis
               dataKey="date"
               domain={['dataMin', 'dataMax']}
-              tickCount={xAxisTickCount}
+              interval={xAxisInterval}
               tickFormatter={formatDateCompact}
               stroke="#6b7280"
               style={{ fontSize: '12px' }}
