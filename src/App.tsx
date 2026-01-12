@@ -8,6 +8,7 @@ import { LoadingSkeleton } from './components/LoadingSkeleton';
 import { ErrorMessage } from './components/ErrorMessage';
 import { VaultoService } from './services/vaulto.service';
 import { YFinanceService } from './services/yfinance.service';
+import { StockDataService } from './services/stockdata.service';
 import { calculateReturns, generateChartData, getFeesForPeriod, getVolumeForPeriod, calculateEffectiveAPR } from './utils/calculations';
 import { TimePeriod, ComparisonData } from './types/stock.types';
 import { TokenizedStock } from './types/vaulto.types';
@@ -42,7 +43,10 @@ function App() {
       }
 
       // Fetch stock price data
-      const stockData = await YFinanceService.fetchStockData(selectedSymbol, timePeriod);
+      // Use StockDataService for periods 3m, 6m, 1y, YFinanceService for others
+      const stockData = timePeriod === '3m' || timePeriod === '6m' || timePeriod === '1y'
+        ? await StockDataService.fetchStockData(selectedSymbol, timePeriod)
+        : await YFinanceService.fetchStockData(selectedSymbol, timePeriod);
 
       if (stockData.prices.length === 0) {
         throw new Error('No price data available for the selected period');

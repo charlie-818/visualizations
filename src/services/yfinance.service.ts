@@ -21,13 +21,13 @@ export class YFinanceService {
     const endDate = new Date();
     endDate.setHours(0, 0, 0, 0); // Normalize to midnight
     
-    const periodMap: Record<TimePeriod, number> = {
+    const periodMap: Partial<Record<TimePeriod, number>> = {
       '24h': 2, // Use 2 days since Alpha Vantage free tier doesn't support intraday
       '7d': 7,
       '30d': 30,
     };
     
-    const days = periodMap[period] || 30;
+    const days = periodMap[period] ?? 30;
     const startDate = new Date(endDate);
     startDate.setDate(startDate.getDate() - days);
     

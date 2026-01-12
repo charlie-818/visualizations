@@ -14,10 +14,20 @@
 # Get a free API key at: https://www.alphavantage.co/support/#api-key
 # The Netlify Function proxies API requests to avoid CORS issues
 
+# Frontend application with Netlify Function for StockData.org API proxy
+# Set STOCKDATA_ORG_API_TOKEN environment variable in Netlify (Site settings → Environment variables)
+# Get an API token at: https://www.stockdata.org/
+# The Netlify Function proxies API requests to avoid CORS issues
+
 # Proxy API requests to Netlify Function (must come before SPA fallback)
 [[redirects]]
   from = "/api/alpha-vantage"
   to = "/.netlify/functions/alpha-vantage"
+  status = 200
+
+[[redirects]]
+  from = "/api/stockdata-org"
+  to = "/.netlify/functions/stockdata-org"
   status = 200
 
 # SPA fallback - redirect all routes to index.html for client-side routing

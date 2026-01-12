@@ -1,4 +1,4 @@
-export type TimePeriod = '24h' | '7d' | '30d';
+export type TimePeriod = '24h' | '7d' | '30d' | '3m' | '6m' | '1y';
 
 export interface StockPriceData {
   date: string;

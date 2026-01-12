@@ -90,6 +90,15 @@ export function getFeesForPeriod(stock: TokenizedStock, period: TimePeriod): num
       return stock.fees24h * 7;
     case '30d':
       return stock.fees30d;
+    case '3m':
+      // Estimate 3 months (90 days) based on daily rate
+      return (stock.fees30d / 30) * 90;
+    case '6m':
+      // Estimate 6 months (180 days) based on daily rate
+      return (stock.fees30d / 30) * 180;
+    case '1y':
+      // Estimate 1 year (365 days) based on daily rate
+      return (stock.fees30d / 30) * 365;
     default:
       return stock.fees24h;
   }
@@ -106,6 +115,15 @@ export function getVolumeForPeriod(stock: TokenizedStock, period: TimePeriod): n
       return stock.volume24h * 7;
     case '30d':
       return stock.volume30d;
+    case '3m':
+      // Estimate 3 months (90 days) based on daily rate
+      return (stock.volume30d / 30) * 90;
+    case '6m':
+      // Estimate 6 months (180 days) based on daily rate
+      return (stock.volume30d / 30) * 180;
+    case '1y':
+      // Estimate 1 year (365 days) based on daily rate
+      return (stock.volume30d / 30) * 365;
     default:
       return stock.volume24h;
   }
@@ -122,6 +140,12 @@ export function getDaysForPeriod(period: TimePeriod): number {
       return 7;
     case '30d':
       return 30;
+    case '3m':
+      return 90;
+    case '6m':
+      return 180;
+    case '1y':
+      return 365;
     default:
       return 1;
   }
