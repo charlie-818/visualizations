@@ -8,7 +8,6 @@ interface TimePeriodSelectorProps {
 }
 
 const periods: { value: TimePeriod; label: string }[] = [
-  { value: '24h', label: '1 day' },
   { value: '7d', label: '7 days' },
   { value: '30d', label: '30 days' },
   { value: '3m', label: '3 months' },
