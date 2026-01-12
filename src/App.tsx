@@ -90,16 +90,16 @@ function App() {
   }, [selectedSymbol, investmentAmount, timePeriod]);
 
   // Auto-update graph when inputs change (only if graph is already displayed)
+  // Note: investmentAmount changes do NOT trigger auto-updates - user must click "Compare"
   useEffect(() => {
     // Only auto-update if we have comparison data displayed and inputs have changed
     if (hasInitialCalculation.current) {
       const currentInputs = { symbol: selectedSymbol, amount: investmentAmount, period: timePeriod };
       const prevInputs = prevInputsRef.current;
       
-      // Check if inputs have actually changed
+      // Check if inputs have actually changed (excluding amount)
       if (prevInputs && (
         prevInputs.symbol !== currentInputs.symbol ||
-        prevInputs.amount !== currentInputs.amount ||
         prevInputs.period !== currentInputs.period
       )) {
         // Only update if comparison data exists (graph is displayed) and inputs are valid
@@ -114,7 +114,7 @@ function App() {
       prevInputsRef.current = { symbol: selectedSymbol, amount: investmentAmount, period: timePeriod };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedSymbol, investmentAmount, timePeriod]);
+  }, [selectedSymbol, timePeriod]);
 
   const handleRetry = useCallback(() => {
     handleCalculate();

@@ -269,18 +269,8 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
               allowDataOverflow={false}
             />
             <Tooltip
-              contentStyle={{
-                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                border: '1px solid #e5e7eb',
-                borderRadius: '6px',
-                padding: '8px 12px',
-              }}
+              content={() => null}
               cursor={{ stroke: '#9ca3af', strokeWidth: 1, strokeDasharray: '3 3' }}
-              formatter={(value: number, name: string) => [
-                formatCurrency(value),
-                name === 'traditionalValue' ? traditionalSymbol : tokenizedSymbol,
-              ]}
-              labelFormatter={(label) => formatDateCompact(label)}
             />
             <Line
               type="monotone"
