@@ -189,65 +189,36 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
     return ticks;
   };
 
-  // Calculate X-axis domain from data (returns date strings)
-  const calculateXAxisDomain = (): [string, string] => {
-    if (!data || data.length === 0) {
-      const now = new Date().toISOString();
-      const yesterday = new Date(Date.now() - 86400000).toISOString();
-      return [yesterday, now];
-    }
+  // Calculate appropriate tick count for X-axis based on time range
+  const calculateXAxisTickCount = (): number => {
+    if (!data || data.length === 0) return 6;
 
-    // Get first and last date strings from sorted data
-    const firstDate = data[0].date;
-    const lastDate = data[data.length - 1].date;
+    const firstDate = new Date(data[0].date).getTime();
+    const lastDate = new Date(data[data.length - 1].date).getTime();
+    const timeRange = lastDate - firstDate;
     
-    return [firstDate, lastDate];
-  };
-
-  // Calculate evenly spaced date ticks
-  const calculateEvenDateTicks = (domain: [string, string]): string[] => {
-    if (!data || data.length === 0) return [];
-
-    const [minDateStr, maxDateStr] = domain;
-    const minTimestamp = new Date(minDateStr).getTime();
-    const maxTimestamp = new Date(maxDateStr).getTime();
-    const timeRange = maxTimestamp - minTimestamp;
-    
-    // Determine appropriate tick count based on time range
     // Convert to days for calculation
     const days = timeRange / (1000 * 60 * 60 * 24);
-    let tickCount: number;
     
     if (days <= 1) {
-      tickCount = 6; // 24h or less
+      return 6; // 24h or less
     } else if (days <= 7) {
-      tickCount = 7; // 7 days
+      return 7; // 7 days
     } else if (days <= 30) {
-      tickCount = 6; // 30 days
+      return 6; // 30 days
     } else if (days <= 90) {
-      tickCount = 6; // 3 months
+      return 6; // 3 months
     } else if (days <= 180) {
-      tickCount = 6; // 6 months
+      return 6; // 6 months
     } else {
-      tickCount = 12; // 1 year - ensure full year is visible
+      return 12; // 1 year - ensure full year is visible
     }
-    
-    const step = timeRange / (tickCount - 1);
-    const ticks: string[] = [];
-    
-    for (let i = 0; i < tickCount; i++) {
-      const timestamp = minTimestamp + (step * i);
-      ticks.push(new Date(timestamp).toISOString());
-    }
-    
-    return ticks;
   };
 
   const yAxisDomain = calculateYAxisDomain();
   const yAxisTicks = calculateEvenTicks(yAxisDomain, 8).slice(1); // Remove first tick (bottom value)
   
-  const xAxisDomain = calculateXAxisDomain();
-  const xAxisTicks = calculateEvenDateTicks(xAxisDomain);
+  const xAxisTickCount = calculateXAxisTickCount();
 
   // Handle mouse move event
   const handleMouseMove = (data: any) => {
@@ -313,8 +284,8 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis
               dataKey="date"
-              domain={xAxisDomain}
-              ticks={xAxisTicks}
+              domain={['dataMin', 'dataMax']}
+              tickCount={xAxisTickCount}
               tickFormatter={formatDateCompact}
               stroke="#6b7280"
               style={{ fontSize: '12px' }}
