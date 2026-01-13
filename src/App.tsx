@@ -182,9 +182,9 @@ function App() {
         </div>
         
         {/* Input Section */}
-        <div className={`bg-white rounded-lg shadow-md mb-6 relative ${isMobileView ? 'p-4 min-h-[120px] flex items-center justify-center' : 'p-6'}`}>
+        <div className={`bg-white rounded-lg shadow-md mb-6 relative ${isMobileView ? 'p-4 min-h-[140px] flex items-center justify-center' : 'p-6'}`}>
           <div className={`${isMobileView ? 'flex justify-center w-full' : 'mb-4'}`}>
-            <p className={`${isMobileView ? 'text-sm leading-tight' : 'text-3xl'} font-normal text-gray-900 flex ${isMobileView ? 'flex-nowrap' : 'flex-wrap'} items-center ${isMobileView ? 'gap-1' : 'gap-3'} transition-all duration-300`}>
+            <p className={`${isMobileView ? 'text-lg leading-relaxed text-center' : 'text-3xl'} font-normal text-gray-900 flex ${isMobileView ? 'flex-wrap justify-center' : 'flex-wrap'} items-center ${isMobileView ? 'gap-2' : 'gap-3'} transition-all duration-300`}>
               <span className={isMobileView ? 'flex-shrink-0' : ''}>What if I invested{' '}</span>
               <InvestmentInput
                 value={investmentAmount}

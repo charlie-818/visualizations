@@ -27,7 +27,7 @@ export const InvestmentInput: React.FC<InvestmentInputProps> = ({
 
   return (
     <span className="inline-flex items-center">
-      <span className={`${isMobileView ? 'text-sm mr-1' : 'text-3xl mr-2'} font-semibold text-green-600`}>$</span>
+      <span className={`${isMobileView ? 'text-base mr-1' : 'text-3xl mr-2'} font-semibold text-green-600`}>$</span>
       <input
         id="investment-input"
         type="number"
@@ -37,7 +37,7 @@ export const InvestmentInput: React.FC<InvestmentInputProps> = ({
         onChange={handleChange}
         disabled={disabled}
         placeholder="0"
-        className={`${isMobileView ? 'text-sm w-16 px-2 py-1 border rounded' : 'text-2xl w-36 px-4 py-2 border-2 rounded-xl'} font-semibold border-green-300 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md`}
+        className={`${isMobileView ? 'text-base w-20 px-2 py-1 border rounded' : 'text-2xl w-36 px-4 py-2 border-2 rounded-xl'} font-semibold border-green-300 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md`}
       />
       {value > 0 && value < 1 && (
         <span className={`ml-3 ${isMobileView ? 'text-xs' : 'text-base'} text-red-600 font-medium`}>Minimum is $1</span>
