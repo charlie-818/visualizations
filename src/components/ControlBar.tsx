@@ -8,6 +8,9 @@ interface ControlBarProps {
   loading: boolean;
   refreshing: boolean;
   disabled: boolean;
+  showMetrics?: boolean;
+  onToggleMetrics?: () => void;
+  hasComparisonData?: boolean;
 }
 
 export const ControlBar: React.FC<ControlBarProps> = ({
@@ -17,7 +20,10 @@ export const ControlBar: React.FC<ControlBarProps> = ({
   onRefresh,
   loading,
   refreshing,
-  disabled
+  disabled,
+  showMetrics = true,
+  onToggleMetrics,
+  hasComparisonData = false
 }) => {
   return (
     <div className="fixed left-0 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
@@ -92,6 +98,29 @@ export const ControlBar: React.FC<ControlBarProps> = ({
           </span>
         </div>
       </button>
+
+      {/* Metrics Toggle Button - Only show in mobile view when there's comparison data */}
+      {isMobileView && hasComparisonData && onToggleMetrics && (
+        <button
+          onClick={onToggleMetrics}
+          className="bg-purple-600 hover:bg-purple-700 text-white p-3 rounded-r-full shadow-lg transition-all duration-300 flex items-center gap-2 group"
+          title={showMetrics ? 'Hide Metrics' : 'Show Metrics'}
+        >
+          <div className="flex flex-col items-center gap-1">
+            <svg
+              className={`h-6 w-6 transition-transform duration-300 ${showMetrics ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+            <span className="text-xs font-medium">
+              {showMetrics ? 'Hide' : 'Show'}
+            </span>
+          </div>
+        </button>
+      )}
     </div>
   );
 };

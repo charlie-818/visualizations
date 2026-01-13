@@ -26,6 +26,7 @@ function App() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [stocks, setStocks] = useState<TokenizedStock[]>(VaultoService.getAllStocks());
   const [isMobileView, setIsMobileView] = useState<boolean>(false);
+  const [showMetrics, setShowMetrics] = useState<boolean>(true);
   const hasInitialCalculation = useRef<boolean>(false);
   const prevInputsRef = useRef<{ symbol: string; amount: number; period: TimePeriod } | null>(null);
 
@@ -169,6 +170,9 @@ function App() {
         loading={loading}
         refreshing={refreshing}
         disabled={!selectedSymbol || investmentAmount < 1}
+        showMetrics={showMetrics}
+        onToggleMetrics={() => setShowMetrics(!showMetrics)}
+        hasComparisonData={!!comparisonData}
       />
       
       <div className={`container mx-auto px-4 py-8 w-full ${isMobileView ? 'max-w-md' : 'max-w-7xl'}`}>
@@ -237,6 +241,7 @@ function App() {
               volumeForPeriod={comparisonData.volumeForPeriod}
               userTVLFraction={comparisonData.calculationResult.userTVLFraction}
               isMobileView={isMobileView}
+              showMetrics={showMetrics}
             />
             <div className="grid grid-cols-1 gap-6">
               <MetricsSummary

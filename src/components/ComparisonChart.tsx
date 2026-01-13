@@ -23,6 +23,7 @@ interface ComparisonChartProps {
   volumeForPeriod: number;
   userTVLFraction: number;
   isMobileView?: boolean;
+  showMetrics?: boolean;
 }
 
 export const ComparisonChart: React.FC<ComparisonChartProps> = ({ 
@@ -35,7 +36,8 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   poolTVL,
   volumeForPeriod,
   userTVLFraction,
-  isMobileView = false
+  isMobileView = false,
+  showMetrics = true
 }) => {
   const traditionalSymbol = mapTokenizedToTraditional(tokenizedSymbol);
 
@@ -47,9 +49,6 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   // State for hovered values
   const [hoveredTraditionalValue, setHoveredTraditionalValue] = useState<number | null>(null);
   const [hoveredTokenizedValue, setHoveredTokenizedValue] = useState<number | null>(null);
-  
-  // State for metrics visibility (mobile only)
-  const [showMetrics, setShowMetrics] = useState<boolean>(true);
 
   // State for animated display values (for smooth transitions)
   const [animatedTraditionalValue, setAnimatedTraditionalValue] = useState(defaultTraditionalValue);
@@ -253,35 +252,15 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   return (
     <div className={`bg-white rounded-lg shadow-md ${isMobileView ? 'p-3' : 'p-6'} relative transition-all duration-300`}>
       <div className={`${isMobileView ? 'flex-col gap-3' : 'flex justify-between items-center'} mb-4`}>
-        <div className={`flex ${isMobileView ? 'gap-2 flex-wrap justify-center' : 'gap-2'} items-center ${isMobileView ? 'justify-between w-full' : ''}`}>
-          <div className="flex gap-2 items-center">
-            <div className={`${isMobileView ? 'text-lg' : 'text-2xl'} font-bold text-green-600`}>{tokenizedSymbol}</div>
-            <span className={`${isMobileView ? 'text-lg' : 'text-2xl'} font-bold text-gray-600`}>
-              {formatCurrency(animatedTokenizedValue)}
-            </span>
-            <div className={`${isMobileView ? 'text-lg' : 'text-2xl'} font-bold text-blue-600`}>{traditionalSymbol}</div>
-            <span className={`${isMobileView ? 'text-lg' : 'text-2xl'} font-bold text-gray-600`}>
-              {formatCurrency(animatedTraditionalValue)}
-            </span>
-          </div>
-          
-          {/* Toggle button for mobile metrics */}
-          {isMobileView && (
-            <button
-              onClick={() => setShowMetrics(!showMetrics)}
-              className="p-1.5 rounded-full hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-              title={showMetrics ? 'Hide metrics' : 'Show metrics'}
-            >
-              <svg
-                className={`h-5 w-5 text-gray-600 transition-transform duration-300 ${showMetrics ? 'rotate-180' : ''}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-          )}
+        <div className={`flex ${isMobileView ? 'gap-2 flex-wrap justify-center' : 'gap-2'} items-center`}>
+          <div className={`${isMobileView ? 'text-lg' : 'text-2xl'} font-bold text-green-600`}>{tokenizedSymbol}</div>
+          <span className={`${isMobileView ? 'text-lg' : 'text-2xl'} font-bold text-gray-600`}>
+            {formatCurrency(animatedTokenizedValue)}
+          </span>
+          <div className={`${isMobileView ? 'text-lg' : 'text-2xl'} font-bold text-blue-600`}>{traditionalSymbol}</div>
+          <span className={`${isMobileView ? 'text-lg' : 'text-2xl'} font-bold text-gray-600`}>
+            {formatCurrency(animatedTraditionalValue)}
+          </span>
         </div>
         
         {/* Metrics display - conditionally shown for mobile, always shown for desktop */}
