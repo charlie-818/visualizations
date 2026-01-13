@@ -37,7 +37,7 @@ export const InvestmentInput: React.FC<InvestmentInputProps> = ({
         onChange={handleChange}
         disabled={disabled}
         placeholder="0"
-        className={`${isMobileView ? 'text-base min-w-[60px] max-w-[100px] px-2 py-1 border rounded' : 'text-2xl min-w-[80px] max-w-[160px] px-4 py-2 border-2 rounded-xl'} w-auto font-semibold border-green-300 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md text-center`}
+        className={`${isMobileView ? 'text-base min-w-[60px] max-w-[100px] px-2 py-1 border rounded ml-1' : 'text-2xl min-w-[80px] max-w-[160px] px-4 py-2 border-2 rounded-xl ml-2'} w-auto font-semibold border-green-300 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md text-center`}
         style={{ width: `${Math.max(isMobileView ? 60 : 80, String(value || '0').length * (isMobileView ? 12 : 20) + (isMobileView ? 24 : 32))}px` }}
       />
       {value > 0 && value < 1 && (
