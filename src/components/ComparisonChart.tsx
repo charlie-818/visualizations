@@ -250,13 +250,13 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   return (
     <div className={`bg-white rounded-lg shadow-md ${isMobileView ? 'p-3' : 'p-6'} relative transition-all duration-300`}>
       <div className={`${isMobileView ? 'flex-col gap-3' : 'flex justify-between items-center'} mb-4`}>
-        <div className={`flex ${isMobileView ? 'flex-col gap-2' : 'gap-2'} items-center`}>
-          <div className={`${isMobileView ? 'text-base' : 'text-2xl'} font-bold text-green-600`}>{tokenizedSymbol}</div>
-          <span className={`${isMobileView ? 'text-base' : 'text-2xl'} font-bold text-gray-600`}>
+        <div className={`flex ${isMobileView ? 'gap-1 flex-wrap' : 'gap-2'} items-center ${isMobileView ? 'text-xs' : ''}`}>
+          <div className={`${isMobileView ? 'text-xs' : 'text-2xl'} font-bold text-green-600`}>{tokenizedSymbol}</div>
+          <span className={`${isMobileView ? 'text-xs' : 'text-2xl'} font-bold text-gray-600`}>
             {formatCurrency(animatedTokenizedValue)}
           </span>
-          <div className={`${isMobileView ? 'text-base' : 'text-2xl'} font-bold text-blue-600`}>{traditionalSymbol}</div>
-          <span className={`${isMobileView ? 'text-base' : 'text-2xl'} font-bold text-gray-600`}>
+          <div className={`${isMobileView ? 'text-xs' : 'text-2xl'} font-bold text-blue-600`}>{traditionalSymbol}</div>
+          <span className={`${isMobileView ? 'text-xs' : 'text-2xl'} font-bold text-gray-600`}>
             {formatCurrency(animatedTraditionalValue)}
           </span>
         </div>
