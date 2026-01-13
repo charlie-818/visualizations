@@ -262,14 +262,14 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
         </div>
         
         {/* Metrics display to the right of title */}
-        <div className={`flex ${isMobileView ? 'flex-col gap-2 text-[10px]' : 'gap-4 text-xs'} text-gray-600`}>
-          <div>
-            <span className="text-gray-500">Volume/TVL Multiple</span>
-            <span className="ml-1 font-semibold text-gray-800">{formatMultiple(volumeTVLMultiple)}</span>
+        <div className={`flex ${isMobileView ? 'flex-row justify-between gap-1 text-[8px] w-full' : 'gap-4 text-xs'} text-gray-600`}>
+          <div className={isMobileView ? 'flex-1 text-center' : ''}>
+            <span className="text-gray-500">{isMobileView ? 'Vol/TVL ' : 'Volume/TVL Multiple'}</span>
+            <span className={`${isMobileView ? 'ml-0' : 'ml-1'} font-semibold text-gray-800`}>{formatMultiple(volumeTVLMultiple)}</span>
           </div>
-          <div>
-            <span className="text-gray-500">Total TVL</span>
-            <span className="ml-1 font-semibold text-gray-800">
+          <div className={isMobileView ? 'flex-1 text-center' : ''}>
+            <span className="text-gray-500">{isMobileView ? 'TVL ' : 'Total TVL'}</span>
+            <span className={`${isMobileView ? 'ml-0' : 'ml-1'} font-semibold text-gray-800`}>
               {new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'USD',
@@ -278,9 +278,9 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
               }).format(poolTVL)}
             </span>
           </div>
-          <div>
-            <span className="text-gray-500">Fraction of TVL</span>
-            <span className="ml-1 font-semibold text-gray-800">{tvlFractionPercentage.toFixed(2)}%</span>
+          <div className={isMobileView ? 'flex-1 text-center' : ''}>
+            <span className="text-gray-500">{isMobileView ? 'Frac ' : 'Fraction of TVL'}</span>
+            <span className={`${isMobileView ? 'ml-0' : 'ml-1'} font-semibold text-gray-800`}>{tvlFractionPercentage.toFixed(2)}%</span>
           </div>
         </div>
       </div>
