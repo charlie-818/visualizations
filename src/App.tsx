@@ -177,15 +177,15 @@ function App() {
         <div className={`bg-white rounded-lg shadow-md mb-6 relative ${isMobileView ? 'p-4' : 'p-6'}`}>
           <div className={`${isMobileView ? 'flex-col space-y-4' : 'flex justify-between items-center'} mb-4`}>
             <div className="flex-1">
-              <p className={`${isMobileView ? 'text-lg' : 'text-3xl'} font-normal text-gray-900 flex flex-wrap items-center ${isMobileView ? 'gap-2' : 'gap-3'} transition-all duration-300`}>
-                What if I invested{' '}
+              <p className={`${isMobileView ? 'text-[10px] leading-tight' : 'text-3xl'} font-normal text-gray-900 flex ${isMobileView ? 'flex-nowrap' : 'flex-wrap'} items-center ${isMobileView ? 'gap-0.5' : 'gap-3'} transition-all duration-300 ${isMobileView ? 'overflow-x-auto whitespace-nowrap' : ''}`}>
+                <span className={isMobileView ? 'flex-shrink-0' : ''}>What if I invested{' '}</span>
                 <InvestmentInput
                   value={investmentAmount}
                   onChange={setInvestmentAmount}
                   disabled={loading}
                   isMobileView={isMobileView}
                 />
-                {' '}in{' '}
+                <span className={isMobileView ? 'flex-shrink-0' : ''}>{' '}in{' '}</span>
                 <StockSelector
                   stocks={stocks}
                   selectedSymbol={selectedSymbol}
@@ -200,7 +200,7 @@ function App() {
                   disabled={loading}
                   isMobileView={isMobileView}
                 />
-                {' '}ago?
+                <span className={isMobileView ? 'flex-shrink-0' : ''}>{' '}ago?</span>
               </p>
             </div>
             <div className={`flex gap-3 items-center ${isMobileView ? 'justify-center w-full' : 'ml-6'}`}>
