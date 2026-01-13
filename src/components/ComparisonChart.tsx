@@ -285,11 +285,11 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
         </div>
       </div>
       
-      <div>
+      <div className={isMobileView ? 'flex justify-center items-center' : ''}>
         <ResponsiveContainer width="100%" height={isMobileView ? 300 : 400}>
           <LineChart 
             data={data} 
-            margin={isMobileView ? { top: 5, right: 10, left: 5, bottom: 5 } : { top: 5, right: 30, left: 20, bottom: 5 }}
+            margin={isMobileView ? { top: 5, right: 5, left: 0, bottom: 5 } : { top: 5, right: 30, left: 20, bottom: 5 }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
           >
