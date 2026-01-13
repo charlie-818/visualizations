@@ -47,6 +47,9 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   // State for hovered values
   const [hoveredTraditionalValue, setHoveredTraditionalValue] = useState<number | null>(null);
   const [hoveredTokenizedValue, setHoveredTokenizedValue] = useState<number | null>(null);
+  
+  // State for metrics visibility (mobile only)
+  const [showMetrics, setShowMetrics] = useState<boolean>(true);
 
   // State for animated display values (for smooth transitions)
   const [animatedTraditionalValue, setAnimatedTraditionalValue] = useState(defaultTraditionalValue);
@@ -250,39 +253,61 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   return (
     <div className={`bg-white rounded-lg shadow-md ${isMobileView ? 'p-3' : 'p-6'} relative transition-all duration-300`}>
       <div className={`${isMobileView ? 'flex-col gap-3' : 'flex justify-between items-center'} mb-4`}>
-        <div className={`flex ${isMobileView ? 'gap-2 flex-wrap justify-center' : 'gap-2'} items-center`}>
-          <div className={`${isMobileView ? 'text-lg' : 'text-2xl'} font-bold text-green-600`}>{tokenizedSymbol}</div>
-          <span className={`${isMobileView ? 'text-lg' : 'text-2xl'} font-bold text-gray-600`}>
-            {formatCurrency(animatedTokenizedValue)}
-          </span>
-          <div className={`${isMobileView ? 'text-lg' : 'text-2xl'} font-bold text-blue-600`}>{traditionalSymbol}</div>
-          <span className={`${isMobileView ? 'text-lg' : 'text-2xl'} font-bold text-gray-600`}>
-            {formatCurrency(animatedTraditionalValue)}
-          </span>
-        </div>
-        
-        {/* Metrics display to the right of title */}
-        <div className={`flex ${isMobileView ? 'flex-row justify-between gap-2 text-xs w-full' : 'gap-4 text-xs'} text-gray-600`}>
-          <div className={isMobileView ? 'flex-1 text-center' : ''}>
-            <span className="text-gray-500">{isMobileView ? 'Vol/TVL ' : 'Volume/TVL Multiple'}</span>
-            <span className={`${isMobileView ? 'ml-0' : 'ml-1'} font-semibold text-gray-800`}>{formatMultiple(volumeTVLMultiple)}</span>
-          </div>
-          <div className={isMobileView ? 'flex-1 text-center' : ''}>
-            <span className="text-gray-500">{isMobileView ? 'TVL ' : 'Total TVL'}</span>
-            <span className={`${isMobileView ? 'ml-0' : 'ml-1'} font-semibold text-gray-800`}>
-              {new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              }).format(poolTVL)}
+        <div className={`flex ${isMobileView ? 'gap-2 flex-wrap justify-center' : 'gap-2'} items-center ${isMobileView ? 'justify-between w-full' : ''}`}>
+          <div className="flex gap-2 items-center">
+            <div className={`${isMobileView ? 'text-lg' : 'text-2xl'} font-bold text-green-600`}>{tokenizedSymbol}</div>
+            <span className={`${isMobileView ? 'text-lg' : 'text-2xl'} font-bold text-gray-600`}>
+              {formatCurrency(animatedTokenizedValue)}
+            </span>
+            <div className={`${isMobileView ? 'text-lg' : 'text-2xl'} font-bold text-blue-600`}>{traditionalSymbol}</div>
+            <span className={`${isMobileView ? 'text-lg' : 'text-2xl'} font-bold text-gray-600`}>
+              {formatCurrency(animatedTraditionalValue)}
             </span>
           </div>
-          <div className={isMobileView ? 'flex-1 text-center' : ''}>
-            <span className="text-gray-500">{isMobileView ? 'Frac ' : 'Fraction of TVL'}</span>
-            <span className={`${isMobileView ? 'ml-0' : 'ml-1'} font-semibold text-gray-800`}>{tvlFractionPercentage.toFixed(2)}%</span>
-          </div>
+          
+          {/* Toggle button for mobile metrics */}
+          {isMobileView && (
+            <button
+              onClick={() => setShowMetrics(!showMetrics)}
+              className="p-1.5 rounded-full hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+              title={showMetrics ? 'Hide metrics' : 'Show metrics'}
+            >
+              <svg
+                className={`h-5 w-5 text-gray-600 transition-transform duration-300 ${showMetrics ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          )}
         </div>
+        
+        {/* Metrics display - conditionally shown for mobile, always shown for desktop */}
+        {(showMetrics || !isMobileView) && (
+          <div className={`flex ${isMobileView ? 'flex-row justify-between gap-2 text-xs w-full' : 'gap-4 text-xs'} text-gray-600 transition-all duration-300`}>
+            <div className={isMobileView ? 'flex-1 text-center' : ''}>
+              <span className="text-gray-500">{isMobileView ? 'Vol/TVL ' : 'Volume/TVL Multiple'}</span>
+              <span className={`${isMobileView ? 'ml-0' : 'ml-1'} font-semibold text-gray-800`}>{formatMultiple(volumeTVLMultiple)}</span>
+            </div>
+            <div className={isMobileView ? 'flex-1 text-center' : ''}>
+              <span className="text-gray-500">{isMobileView ? 'TVL ' : 'Total TVL'}</span>
+              <span className={`${isMobileView ? 'ml-0' : 'ml-1'} font-semibold text-gray-800`}>
+                {new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                }).format(poolTVL)}
+              </span>
+            </div>
+            <div className={isMobileView ? 'flex-1 text-center' : ''}>
+              <span className="text-gray-500">{isMobileView ? 'Frac ' : 'Fraction of TVL'}</span>
+              <span className={`${isMobileView ? 'ml-0' : 'ml-1'} font-semibold text-gray-800`}>{tvlFractionPercentage.toFixed(2)}%</span>
+            </div>
+          </div>
+        )}
       </div>
       
       <div className={isMobileView ? 'flex justify-center items-center' : ''}>
