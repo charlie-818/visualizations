@@ -3,15 +3,16 @@ import React from 'react';
 interface ErrorMessageProps {
   message: string;
   onRetry?: () => void;
+  isMobileView?: boolean;
 }
 
-export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onRetry }) => {
+export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onRetry, isMobileView = false }) => {
   return (
-    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-      <div className="flex items-center justify-between">
+    <div className={`bg-red-50 border border-red-200 rounded-lg ${isMobileView ? 'p-3' : 'p-4'}`}>
+      <div className={`flex items-center ${isMobileView ? 'flex-col gap-2' : 'justify-between'}`}>
         <div className="flex items-center">
           <svg
-            className="h-5 w-5 text-red-600 mr-2"
+            className={`${isMobileView ? 'h-4 w-4' : 'h-5 w-5'} text-red-600 mr-2`}
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -21,12 +22,12 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onRetry }) 
               clipRule="evenodd"
             />
           </svg>
-          <p className="text-red-800">{message}</p>
+          <p className={`${isMobileView ? 'text-xs' : 'text-base'} text-red-800`}>{message}</p>
         </div>
         {onRetry && (
           <button
             onClick={onRetry}
-            className="ml-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+            className={`${isMobileView ? 'ml-0 px-3 py-1 text-sm' : 'ml-4 px-4 py-2'} bg-red-600 text-white rounded hover:bg-red-700 transition-colors`}
           >
             Retry
           </button>

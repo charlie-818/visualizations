@@ -6,6 +6,7 @@ import { ComparisonChart } from './components/ComparisonChart';
 import { MetricsSummary } from './components/MetricsSummary';
 import { LoadingSkeleton } from './components/LoadingSkeleton';
 import { ErrorMessage } from './components/ErrorMessage';
+import { ViewModeToggle } from './components/ViewModeToggle';
 import { VaultoService } from './services/vaulto.service';
 import { YFinanceService } from './services/yfinance.service';
 import { StockDataService } from './services/stockdata.service';
@@ -24,6 +25,7 @@ function App() {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [stocks, setStocks] = useState<TokenizedStock[]>(VaultoService.getAllStocks());
+  const [isMobileView, setIsMobileView] = useState<boolean>(false);
   const hasInitialCalculation = useRef<boolean>(false);
   const prevInputsRef = useRef<{ symbol: string; amount: number; period: TimePeriod } | null>(null);
 
@@ -158,26 +160,30 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="container mx-auto px-4 py-8 max-w-7xl w-full">
+      {/* View Mode Toggle */}
+      <ViewModeToggle isMobileView={isMobileView} onToggle={setIsMobileView} />
+      
+      <div className={`container mx-auto px-4 py-8 w-full ${isMobileView ? 'max-w-md' : 'max-w-7xl'}`}>
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <img 
             src={vaultoLogo} 
             alt="Vaulto Logo" 
-            className="h-16 w-auto object-contain"
+            className={`${isMobileView ? 'h-10' : 'h-16'} w-auto object-contain transition-all duration-300`}
           />
         </div>
         
         {/* Input Section */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6 relative">
-          <div className="flex justify-between items-center mb-4">
+        <div className={`bg-white rounded-lg shadow-md mb-6 relative ${isMobileView ? 'p-4' : 'p-6'}`}>
+          <div className={`${isMobileView ? 'flex-col space-y-4' : 'flex justify-between items-center'} mb-4`}>
             <div className="flex-1">
-              <p className="text-3xl font-normal text-gray-900 flex flex-wrap items-center gap-3">
+              <p className={`${isMobileView ? 'text-lg' : 'text-3xl'} font-normal text-gray-900 flex flex-wrap items-center ${isMobileView ? 'gap-2' : 'gap-3'} transition-all duration-300`}>
                 What if I invested{' '}
                 <InvestmentInput
                   value={investmentAmount}
                   onChange={setInvestmentAmount}
                   disabled={loading}
+                  isMobileView={isMobileView}
                 />
                 {' '}in{' '}
                 <StockSelector
@@ -185,25 +191,27 @@ function App() {
                   selectedSymbol={selectedSymbol}
                   onSelect={setSelectedSymbol}
                   disabled={loading || refreshing}
+                  isMobileView={isMobileView}
                 />
                 {' '}
                 <TimePeriodSelector
                   value={timePeriod}
                   onChange={setTimePeriod}
                   disabled={loading}
+                  isMobileView={isMobileView}
                 />
                 {' '}ago?
               </p>
             </div>
-            <div className="flex gap-3 items-center ml-6">
+            <div className={`flex gap-3 items-center ${isMobileView ? 'justify-center w-full' : 'ml-6'}`}>
               <button
                 onClick={handleCalculate}
                 disabled={loading || refreshing || !selectedSymbol || investmentAmount < 1}
-                className="px-6 py-3 text-lg font-semibold bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2 shadow-md hover:shadow-lg"
+                className={`${isMobileView ? 'px-4 py-2 text-sm flex-1' : 'px-6 py-3 text-lg'} font-semibold bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 shadow-md hover:shadow-lg`}
               >
                 {loading ? (
                   <>
-                    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className={`animate-spin ${isMobileView ? 'h-4 w-4' : 'h-5 w-5'}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
@@ -216,16 +224,16 @@ function App() {
               <button
                 onClick={handleRefresh}
                 disabled={loading || refreshing}
-                className="p-3 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-md hover:shadow-lg"
+                className={`${isMobileView ? 'p-2' : 'p-3'} bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-md hover:shadow-lg`}
                 title="Refresh Data"
               >
                 {refreshing ? (
-                  <svg className="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg className={`animate-spin ${isMobileView ? 'h-5 w-5' : 'h-6 w-6'}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                 ) : (
-                  <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className={`${isMobileView ? 'h-5 w-5' : 'h-6 w-6'}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                 )}
@@ -233,17 +241,17 @@ function App() {
             </div>
           </div>
           {lastUpdated && (
-            <div className="text-sm text-gray-500">
+            <div className={`${isMobileView ? 'text-xs' : 'text-sm'} text-gray-500`}>
               Last updated: {lastUpdated.toLocaleTimeString()}
             </div>
           )}
         </div>
 
         {/* Error Message */}
-        {error && <ErrorMessage message={error} onRetry={handleRetry} />}
+        {error && <ErrorMessage message={error} onRetry={handleRetry} isMobileView={isMobileView} />}
 
         {/* Loading State */}
-        {loading && <LoadingSkeleton />}
+        {loading && <LoadingSkeleton isMobileView={isMobileView} />}
 
         {/* Results Section */}
         {!loading && comparisonData && (
@@ -258,10 +266,12 @@ function App() {
               poolTVL={comparisonData.poolTVL}
               volumeForPeriod={comparisonData.volumeForPeriod}
               userTVLFraction={comparisonData.calculationResult.userTVLFraction}
+              isMobileView={isMobileView}
             />
             <div className="grid grid-cols-1 gap-6">
               <MetricsSummary
                 result={comparisonData.calculationResult}
+                isMobileView={isMobileView}
               />
             </div>
           </div>

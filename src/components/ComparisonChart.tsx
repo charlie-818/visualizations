@@ -22,6 +22,7 @@ interface ComparisonChartProps {
   poolTVL: number;
   volumeForPeriod: number;
   userTVLFraction: number;
+  isMobileView?: boolean;
 }
 
 export const ComparisonChart: React.FC<ComparisonChartProps> = ({ 
@@ -33,7 +34,8 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   startPrice: _startPrice,
   poolTVL,
   volumeForPeriod,
-  userTVLFraction
+  userTVLFraction,
+  isMobileView = false
 }) => {
   const traditionalSymbol = mapTokenizedToTraditional(tokenizedSymbol);
 
@@ -246,21 +248,21 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 relative">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex gap-2 items-center">
-          <div className="text-2xl font-bold text-green-600">{tokenizedSymbol}</div>
-          <span className="text-2xl font-bold text-gray-600">
+    <div className={`bg-white rounded-lg shadow-md ${isMobileView ? 'p-3' : 'p-6'} relative transition-all duration-300`}>
+      <div className={`${isMobileView ? 'flex-col gap-3' : 'flex justify-between items-center'} mb-4`}>
+        <div className={`flex ${isMobileView ? 'flex-col gap-2' : 'gap-2'} items-center`}>
+          <div className={`${isMobileView ? 'text-base' : 'text-2xl'} font-bold text-green-600`}>{tokenizedSymbol}</div>
+          <span className={`${isMobileView ? 'text-base' : 'text-2xl'} font-bold text-gray-600`}>
             {formatCurrency(animatedTokenizedValue)}
           </span>
-          <div className="text-2xl font-bold text-blue-600">{traditionalSymbol}</div>
-          <span className="text-2xl font-bold text-gray-600">
+          <div className={`${isMobileView ? 'text-base' : 'text-2xl'} font-bold text-blue-600`}>{traditionalSymbol}</div>
+          <span className={`${isMobileView ? 'text-base' : 'text-2xl'} font-bold text-gray-600`}>
             {formatCurrency(animatedTraditionalValue)}
           </span>
         </div>
         
         {/* Metrics display to the right of title */}
-        <div className="flex gap-4 text-xs text-gray-600">
+        <div className={`flex ${isMobileView ? 'flex-col gap-2 text-[10px]' : 'gap-4 text-xs'} text-gray-600`}>
           <div>
             <span className="text-gray-500">Volume/TVL Multiple</span>
             <span className="ml-1 font-semibold text-gray-800">{formatMultiple(volumeTVLMultiple)}</span>
@@ -284,10 +286,10 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
       </div>
       
       <div>
-        <ResponsiveContainer width="100%" height={400}>
+        <ResponsiveContainer width="100%" height={isMobileView ? 300 : 400}>
           <LineChart 
             data={data} 
-            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            margin={isMobileView ? { top: 5, right: 10, left: 5, bottom: 5 } : { top: 5, right: 30, left: 20, bottom: 5 }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
           >
@@ -297,14 +299,14 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
               interval={xAxisInterval}
               tickFormatter={formatDateCompact}
               stroke="#6b7280"
-              style={{ fontSize: '12px' }}
+              style={{ fontSize: isMobileView ? '9px' : '12px' }}
             />
             <YAxis
               domain={yAxisDomain}
               ticks={yAxisTicks}
               tickFormatter={formatYAxis}
               stroke="#6b7280"
-              style={{ fontSize: '12px' }}
+              style={{ fontSize: isMobileView ? '9px' : '12px' }}
               allowDataOverflow={false}
             />
             <Tooltip
@@ -316,7 +318,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
               dataKey="traditionalValue"
               name="Traditional Stock"
               stroke="#3b82f6"
-              strokeWidth={2}
+              strokeWidth={isMobileView ? 1.5 : 2}
               dot={false}
             />
             <Line
@@ -324,7 +326,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
               dataKey="tokenizedValue"
               name="Tokenized Stock"
               stroke="#10b981"
-              strokeWidth={2}
+              strokeWidth={isMobileView ? 1.5 : 2}
               dot={false}
             />
           </LineChart>
