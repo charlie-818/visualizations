@@ -262,7 +262,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
         </div>
         
         {/* Metrics display to the right of title */}
-        <div className={`flex ${isMobileView ? 'flex-row justify-between gap-1 text-[8px] w-full' : 'gap-4 text-xs'} text-gray-600`}>
+        <div className={`flex ${isMobileView ? 'flex-row justify-between gap-2 text-xs w-full' : 'gap-4 text-xs'} text-gray-600`}>
           <div className={isMobileView ? 'flex-1 text-center' : ''}>
             <span className="text-gray-500">{isMobileView ? 'Vol/TVL ' : 'Volume/TVL Multiple'}</span>
             <span className={`${isMobileView ? 'ml-0' : 'ml-1'} font-semibold text-gray-800`}>{formatMultiple(volumeTVLMultiple)}</span>
