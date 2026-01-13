@@ -27,6 +27,7 @@ function App() {
   const [stocks, setStocks] = useState<TokenizedStock[]>(VaultoService.getAllStocks());
   const [isMobileView, setIsMobileView] = useState<boolean>(false);
   const [showMetrics, setShowMetrics] = useState<boolean>(true);
+  const [isMobileDevice, setIsMobileDevice] = useState<boolean>(false);
   const hasInitialCalculation = useRef<boolean>(false);
   const prevInputsRef = useRef<{ symbol: string; amount: number; period: TimePeriod } | null>(null);
 
@@ -159,11 +160,27 @@ function App() {
     }
   }, [selectedSymbol]);
 
+  // Detect if user is on an actual mobile device
+  useEffect(() => {
+    const checkMobileDevice = () => {
+      setIsMobileDevice(window.innerWidth <= 768);
+    };
+
+    // Check on mount
+    checkMobileDevice();
+
+    // Listen for resize events
+    window.addEventListener('resize', checkMobileDevice);
+
+    return () => window.removeEventListener('resize', checkMobileDevice);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       {/* Control Bar */}
       <ControlBar 
         isMobileView={isMobileView}
+        isMobileDevice={isMobileDevice}
         onToggle={setIsMobileView}
         onCompare={handleCalculate}
         onRefresh={handleRefresh}
@@ -175,7 +192,7 @@ function App() {
         hasComparisonData={!!comparisonData}
       />
       
-      <div className={`container mx-auto px-4 py-8 w-full ${isMobileView ? 'max-w-md' : 'max-w-7xl'}`}>
+      <div className={`container mx-auto px-4 w-full ${isMobileView ? 'max-w-md' : 'max-w-7xl'} ${isMobileDevice ? 'pt-16 pb-8' : 'py-8'}`}>
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <img 
