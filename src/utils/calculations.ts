@@ -9,6 +9,19 @@ export function mapTokenizedToTraditional(symbol: string): string {
 }
 
 /**
+ * Calculates impermanent loss ratio for a 50/50 constant product AMM.
+ * Formula: IL = (2 * sqrt(r) / (1 + r)) - 1, where r = price_end / price_start
+ */
+function calculateImpermanentLossRatio(priceRatio: number): number {
+  if (!Number.isFinite(priceRatio) || priceRatio < 0) {
+    return 0;
+  }
+
+  const sqrtRatio = Math.sqrt(priceRatio);
+  return (2 * sqrtRatio) / (1 + priceRatio) - 1;
+}
+
+/**
  * Calculates returns and fees for traditional vs tokenized stock comparison
  */
 export function calculateReturns(
@@ -22,6 +35,10 @@ export function calculateReturns(
   const priceChange = (traditionalPriceEnd - traditionalPriceStart) / traditionalPriceStart;
   const traditionalReturn = priceChange * investmentAmount;
   const traditionalReturnPercentage = priceChange * 100;
+  const priceRatio = 1 + priceChange;
+  const impermanentLossRatio = calculateImpermanentLossRatio(priceRatio);
+  const impermanentLoss = impermanentLossRatio * investmentAmount;
+  const impermanentLossPercentage = impermanentLossRatio * 100;
 
   // User's fraction of the TVL pool, capped at 1.0 (cannot exceed pool's maximum)
   const userTVLFraction = Math.min(investmentAmount / poolTVL, 1.0);
@@ -29,8 +46,8 @@ export function calculateReturns(
   // Fees claimable by the user
   const feesClaimed = totalFees * userTVLFraction;
 
-  // Tokenized return (traditional return + fees)
-  const tokenizedReturn = traditionalReturn + feesClaimed;
+  // Tokenized return (traditional return + fees + impermanent loss)
+  const tokenizedReturn = traditionalReturn + feesClaimed + impermanentLoss;
   const tokenizedReturnPercentage = (tokenizedReturn / investmentAmount) * 100;
 
   // Total tokenized value (investment + tokenized return)
@@ -42,6 +59,8 @@ export function calculateReturns(
     tokenizedReturn,
     tokenizedReturnPercentage,
     feesClaimed,
+    impermanentLoss,
+    impermanentLossPercentage,
     userTVLFraction,
     totalTokenizedValue,
   };
@@ -66,10 +85,13 @@ export function generateChartData(
   return priceData.map((point, index) => {
     const priceChange = (point.price - startPrice) / startPrice;
     const traditionalValue = investmentAmount + (priceChange * investmentAmount);
+    const priceRatio = 1 + priceChange;
+    const impermanentLossRatio = calculateImpermanentLossRatio(priceRatio);
+    const impermanentLoss = investmentAmount * impermanentLossRatio;
     
     // Accumulate fees up to this point
     const accumulatedFees = feesPerPoint * (index + 1) * userTVLFraction;
-    const tokenizedValue = traditionalValue + accumulatedFees;
+    const tokenizedValue = traditionalValue + accumulatedFees + impermanentLoss;
 
     return {
       date: point.date,

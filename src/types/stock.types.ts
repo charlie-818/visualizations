@@ -17,6 +17,8 @@ export interface CalculationResult {
   tokenizedReturn: number;
   tokenizedReturnPercentage: number;
   feesClaimed: number;
+  impermanentLoss: number;
+  impermanentLossPercentage: number;
   userTVLFraction: number;
   totalTokenizedValue: number;
 }

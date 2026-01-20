@@ -10,8 +10,8 @@ interface MetricsSummaryProps {
 export const MetricsSummary: React.FC<MetricsSummaryProps> = ({ result, isMobileView = false }) => {
   return (
     <div className={`bg-white rounded-lg shadow-md ${isMobileView ? 'p-4' : 'p-6'} transition-all duration-300`}>
-      {/* First row: Two large numbers with fees in the middle */}
-      <div className={`grid grid-cols-3 ${isMobileView ? 'gap-2' : 'gap-4'}`}>
+      {/* Performance metrics */}
+      <div className={`grid ${isMobileView ? 'grid-cols-2 gap-3' : 'grid-cols-4 gap-4'}`}>
         {/* Tokenized Return */}
         <div className="text-center">
           <div className={`${isMobileView ? 'text-xs' : 'text-sm'} text-gray-600 mb-2`}>Tokenized Return</div>
@@ -28,6 +28,17 @@ export const MetricsSummary: React.FC<MetricsSummaryProps> = ({ result, isMobile
           <div className={`${isMobileView ? 'text-xs' : 'text-sm'} text-gray-600 mb-2`}>Fees Earned</div>
           <div className={`${isMobileView ? 'text-lg' : 'text-3xl'} font-bold text-purple-600 mb-1`}>
             {formatCurrency(result.feesClaimed)}
+          </div>
+        </div>
+
+        {/* Impermanent Loss */}
+        <div className="text-center">
+          <div className={`${isMobileView ? 'text-xs' : 'text-sm'} text-gray-600 mb-2`}>Impermanent Loss</div>
+          <div className={`${isMobileView ? 'text-lg' : 'text-3xl'} font-bold text-red-600 mb-1`}>
+            {formatCurrency(result.impermanentLoss)}
+          </div>
+          <div className={`${isMobileView ? 'text-xs' : 'text-sm'} text-gray-500`}>
+            {formatPercentage(result.impermanentLossPercentage)}
           </div>
         </div>
         

@@ -189,7 +189,9 @@ Traditional Return = (Price End - Price Start) / Price Start × Investment Amoun
 ```
 User TVL Fraction = Investment Amount / Pool TVL
 Fees Claimable = Total Fees × User TVL Fraction
-Tokenized Return = Traditional Return + Fees Claimable
+Impermanent Loss Ratio = (2 × sqrt(r) / (1 + r)) - 1, where r = Price End / Price Start
+Impermanent Loss = Investment Amount × Impermanent Loss Ratio
+Tokenized Return = Traditional Return + Fees Claimable + Impermanent Loss
 ```
 
 The chart shows:
