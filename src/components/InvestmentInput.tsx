@@ -5,6 +5,7 @@ interface InvestmentInputProps {
   onChange: (value: number) => void;
   disabled?: boolean;
   isMobileView?: boolean;
+  onEnterPress?: () => void;
 }
 
 export const InvestmentInput: React.FC<InvestmentInputProps> = ({
@@ -12,6 +13,7 @@ export const InvestmentInput: React.FC<InvestmentInputProps> = ({
   onChange,
   disabled = false,
   isMobileView = false,
+  onEnterPress,
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -25,6 +27,12 @@ export const InvestmentInput: React.FC<InvestmentInputProps> = ({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && onEnterPress) {
+      onEnterPress();
+    }
+  };
+
   return (
     <span className="inline-flex items-center">
       <span className={`${isMobileView ? 'text-base mr-1' : 'text-3xl mr-2'} font-semibold text-green-600`}>$</span>
@@ -35,6 +43,7 @@ export const InvestmentInput: React.FC<InvestmentInputProps> = ({
         step="0.01"
         value={value === 0 ? '' : value}
         onChange={handleChange}
+        onKeyDown={handleKeyDown}
         disabled={disabled}
         placeholder="0"
         className={`${isMobileView ? 'text-base min-w-[60px] max-w-[100px] px-2 py-1 border rounded ml-1' : 'text-2xl min-w-[80px] max-w-[160px] px-4 py-2 border-2 rounded-xl ml-2'} w-auto font-semibold border-green-300 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md text-center`}

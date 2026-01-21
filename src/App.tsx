@@ -212,6 +212,7 @@ function App() {
                 onChange={setInvestmentAmount}
                 disabled={loading}
                 isMobileView={isMobileView}
+                onEnterPress={handleCalculate}
               />
               <span className={isMobileView ? 'flex-shrink-0' : ''}>{' '}in{' '}</span>
               <StockSelector
@@ -220,6 +221,7 @@ function App() {
                 onSelect={setSelectedSymbol}
                 disabled={loading || refreshing}
                 isMobileView={isMobileView}
+                onEnterPress={handleCalculate}
               />
               {' '}
               <TimePeriodSelector
@@ -227,6 +229,7 @@ function App() {
                 onChange={setTimePeriod}
                 disabled={loading}
                 isMobileView={isMobileView}
+                onEnterPress={handleCalculate}
               />
               <span className={isMobileView ? 'flex-shrink-0' : ''}>{' '}ago?</span>
             </p>
