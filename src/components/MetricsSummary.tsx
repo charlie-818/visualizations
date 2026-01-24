@@ -1,6 +1,8 @@
 import React from 'react';
 import { CalculationResult } from '../types/stock.types';
 import { formatCurrency, formatPercentage } from '../utils/formatters';
+import 'katex/dist/katex.min.css';
+import { InlineMath } from 'react-katex';
 
 interface MetricsSummaryProps {
   result: CalculationResult;
@@ -44,14 +46,14 @@ export const MetricsSummary: React.FC<MetricsSummaryProps> = ({ result, isMobile
           </div>
           
           {/* Tooltip with formula */}
-          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-4 py-3 bg-gray-900 text-white text-sm rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-10 pointer-events-none">
+          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-6 py-4 bg-gray-900 text-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 pointer-events-none" style={{ minWidth: '320px' }}>
             <div className="text-center">
-              <div className="font-semibold mb-2">Impermanent Loss Formula:</div>
-              <div className="font-mono text-xs bg-gray-800 px-3 py-2 rounded">
-                IL = (2 × √r / (1 + r)) - 1
+              <div className="font-semibold mb-3 text-base">Impermanent Loss Formula</div>
+              <div className="bg-gray-800 px-4 py-3 rounded text-lg">
+                <InlineMath math="\text{IL} = \frac{2\sqrt{r}}{1 + r} - 1" />
               </div>
-              <div className="text-xs mt-2 text-gray-300">
-                where r = Price<sub>end</sub> / Price<sub>start</sub>
+              <div className="text-sm mt-3 text-gray-300">
+                <InlineMath math="\text{where } r = \frac{\text{Price}_{\text{end}}}{\text{Price}_{\text{start}}}" />
               </div>
             </div>
             {/* Arrow pointing down */}
