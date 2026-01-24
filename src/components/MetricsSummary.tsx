@@ -32,13 +32,32 @@ export const MetricsSummary: React.FC<MetricsSummaryProps> = ({ result, isMobile
         </div>
 
         {/* Impermanent Loss */}
-        <div className="text-center">
-          <div className={`${isMobileView ? 'text-xs' : 'text-sm'} text-gray-600 mb-2`}>Impermanent Loss</div>
+        <div className="text-center relative group">
+          <div className={`${isMobileView ? 'text-xs' : 'text-sm'} text-gray-600 mb-2 cursor-help`}>
+            Impermanent Loss
+          </div>
           <div className={`${isMobileView ? 'text-lg' : 'text-3xl'} font-bold text-red-600 mb-1`}>
             {formatCurrency(result.impermanentLoss)}
           </div>
           <div className={`${isMobileView ? 'text-xs' : 'text-sm'} text-gray-500`}>
             {formatPercentage(result.impermanentLossPercentage)}
+          </div>
+          
+          {/* Tooltip with formula */}
+          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-4 py-3 bg-gray-900 text-white text-sm rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-10 pointer-events-none">
+            <div className="text-center">
+              <div className="font-semibold mb-2">Impermanent Loss Formula:</div>
+              <div className="font-mono text-xs bg-gray-800 px-3 py-2 rounded">
+                IL = (2 × √r / (1 + r)) - 1
+              </div>
+              <div className="text-xs mt-2 text-gray-300">
+                where r = Price<sub>end</sub> / Price<sub>start</sub>
+              </div>
+            </div>
+            {/* Arrow pointing down */}
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-px">
+              <div className="border-8 border-transparent border-t-gray-900"></div>
+            </div>
           </div>
         </div>
         
