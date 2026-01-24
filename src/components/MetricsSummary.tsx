@@ -52,7 +52,7 @@ export const MetricsSummary: React.FC<MetricsSummaryProps> = ({ result, isMobile
               <div className="bg-gray-800 px-4 py-3 rounded text-lg">
                 <InlineMath math="\text{IL} = \frac{2\sqrt{r}}{1 + r} - 1" />
               </div>
-              <div className="text-sm mt-3 text-gray-300">
+              <div className="text-base mt-3 text-gray-300">
                 <InlineMath math="\text{where } r = \frac{\text{Price}_{\text{end}}}{\text{Price}_{\text{start}}}" />
               </div>
             </div>
